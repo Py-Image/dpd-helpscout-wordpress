@@ -1,0 +1,21 @@
+release:
+  type: 'plugin'
+  languagesDir: './languages/'
+  files:
+    - "./**/*.*"
+    - "!./**/*.map"
+    - "!./**/build/**/*.*"
+    - "!./**/.git/**"
+    - "!./**/.gitignore"
+    - "!./**/.gitmodules"
+    - "!./**/gulpfile.js"
+    - "!./**/gruntfile.js"
+    - "!./**/gulp/**/*.*"
+    - "!./**/package.json"
+    - "!./**/package-lock.json"
+    - "!./**/bower.json"
+    - "!./**/composer.json"
+    - "!./**/node_modules/**/*.*"
+    - "!./**/bower_components/**/*.*"
+    - "!./**/README.md"
+    - "!./**/*.zip"
