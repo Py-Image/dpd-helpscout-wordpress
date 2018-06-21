@@ -169,7 +169,7 @@ class PyIS_DPD_HelpScout_Settings {
 			),
 			'pyis_dpd_helpscout_secret_key' => array(
 				'type' => 'text',
-				'settings_label' => __( 'CognitoForms Secret Key', 'pyis-dpd-helpscout' ),
+				'settings_label' => __( 'HelpScout Secret Key', 'pyis-dpd-helpscout' ),
 				'no_init' => true,
 				'option_field' => true,
 				'description' => '<p class="description">' .
@@ -182,11 +182,11 @@ class PyIS_DPD_HelpScout_Settings {
 			),
 			'pyis_dpd_api_key' => array(
 				'type' => 'text',
-				'settings_label' => __( 'Drip API Token', 'pyis-dpd-helpscout' ),
+				'settings_label' => __( 'DPD API Key', 'pyis-dpd-helpscout' ),
 				'no_init' => true,
 				'option_field' => true,
-				'description' => '<a href="//www.getdrip.com/user/edit" target="_blank">' . 
-									__( 'Find your API Token Here', 'pyis-dpd-helpscout' ) . 
+				'description' => '<a href="//getdpd.com/user/profile" target="_blank">' . 
+									__( 'Find your API Key Here', 'pyis-dpd-helpscout' ) . 
 								 '</a>',
 				'description_tip' => false,
 				'input_atts' => array(
@@ -195,11 +195,11 @@ class PyIS_DPD_HelpScout_Settings {
 			),
 			'pyis_dpd_account_id' => array(
 				'type' => 'text',
-				'settings_label' => __( 'Drip Account ID', 'pyis-dpd-helpscout' ),
+				'settings_label' => __( 'DPD Account Email Address', 'pyis-dpd-helpscout' ),
 				'no_init' => true,
 				'option_field' => true,
 				'description' => '<p class="description">' . 
-									__( 'Your Account ID is found in the Address Bar after logging in. <code>https://www.getdrip.com/&lt;account_id&gt;/</code>', 'pyis-dpd-helpscout' ) . 
+									__( 'This is used by Selenium to regenerate Download URLs.', 'pyis-dpd-helpscout' ) . 
 								 '</p>',
 				'description_tip' => false,
 				'input_atts' => array(
@@ -208,11 +208,11 @@ class PyIS_DPD_HelpScout_Settings {
 			),
 			'pyis_dpd_account_password' => array(
 				'type' => 'password',
-				'settings_label' => __( 'Drip Account Password', 'pyis-dpd-helpscout' ),
+				'settings_label' => __( 'DPD Account Password', 'pyis-dpd-helpscout' ),
 				'no_init' => true,
 				'option_field' => true,
 				'description' => '<p class="description">' . 
-									__( 'Your Password is needed to Authenticate the API Request.', 'pyis-dpd-helpscout' ) . 
+									__( 'This is used by Selenium to regenerate Download URLs.', 'pyis-dpd-helpscout' ) . 
 								 '</p>',
 				'description_tip' => false,
 				'input_atts' => array(
