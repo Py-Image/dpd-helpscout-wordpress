@@ -46,7 +46,7 @@ class PyIS_DPD_HelpScout_REST {
     }
 
     /**
-     * Callback for our REST Endpoint
+     * Callback for our REST Endpoint to initially populate the HelpScout App
      * 
      * @param       object $request WP_REST_Request Object
      * @return      string JSON
@@ -72,6 +72,16 @@ class PyIS_DPD_HelpScout_REST {
 		$this->respond( $html );
 
     }
+	
+	/**
+	 * Callback for our REST Endpoint to regenerate the Download URLs
+	 */
+	public function regenerate_data() {
+		
+		// https://github.com/facebook/php-webdriver via Composer
+		require_once PyIS_DPD_HelpScout_DIR . '/core/library/phpwebdriver/vendor/autoload.php';
+		
+	}
 	
 	/**
 	 * Captures incoming JSON

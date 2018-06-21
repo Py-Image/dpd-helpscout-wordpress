@@ -1,2 +1,3 @@
-echo "Starting up Selenium server ..."
-DISPLAY=:1 xvfb-run java -jar ~/selenium/selenium-server-standalone-3.12.0.jar
+#!/bin/bash
+
+chromedriver --url-base=/wd/hub
