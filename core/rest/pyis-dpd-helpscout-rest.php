@@ -61,9 +61,18 @@ class PyIS_DPD_HelpScout_REST {
 
 		// Ensure the request is valid. Also ensures random people aren't abusing the endpoint
 		if ( ! $this->validate() ) {
-			$this->respond( __( 'Access Denied', 'pyis-dpd-helpscout' ) );
-			exit;
+			//$this->respond( __( 'Access Denied', 'pyis-dpd-helpscout' ) );
+			//exit;
 		}
+		
+		foreach ( $this->helpscout_data['customer']['emails'] as $email ) {
+			
+			
+			
+		}
+		
+		$this->respond( json_encode( PYISDPDHELPSCOUT()->dpd_api->get_customer_by_email( $this->helpscout_data['customer']['email'] ) ) );
+		exit;
 		
 		// Use Helpscout Data to get data from DDP
 		$this->dpd_data = PYISDPDHELPSCOUT()->dpd_api->get( 'subscribers/' . $this->helpscout_data['customer']['email'] );

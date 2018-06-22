@@ -273,11 +273,8 @@ if ( ! class_exists( 'PyIS_DPD_HelpScout' ) ) {
             $account_id = get_option( 'pyis_dpd_account_id' );
             $account_id = ( $account_id ) ? $account_id : '';
             
-            $account_password = get_option( 'pyis_dpd_account_password' );
-            $account_password = ( $account_password ) ? $account_password : '';
-            
             require_once PyIS_DPD_HelpScout_DIR . '/core/api/pyis-dpd-helpscout-dpd-api.php';
-            $this->dpd_api = new PyIS_DPD_HelpScout_API_DPD( $api_key, $account_id, $account_password );
+            $this->dpd_api = new PyIS_DPD_HelpScout_API_DPD( $account_id, $api_key );
             
             require_once PyIS_DPD_HelpScout_DIR . '/core/rest/pyis-dpd-helpscout-rest.php';
             $this->rest = new PyIS_DPD_HelpScout_REST();

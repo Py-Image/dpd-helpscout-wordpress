@@ -17,49 +17,58 @@ if ( ! class_exists( 'PyIS_DPD_HelpScout_API_Class' ) ) {
 class PyIS_DPD_HelpScout_API_DPD extends PyIS_DPD_HelpScout_API_Class {
 
 	/**
-	 * @var			PyIS_DPD_HelpScout_API_Drip $api_key Holds set API Key
+	 * @var			String $api_key Holds set API Key
 	 * @since		1.0.0
 	 */
 	private $api_key = '';
 	
 	/**
-	 * @var			PyIS_DPD_HelpScout_API_Drip $account_id The Account ID the API Key belongs to. Yep, we need both.
+	 * @var			String $user_email The Account ID the API Key belongs to. Yep, we need both.
 	 * @since		1.0.0
 	 */
-	private $account_id = '';
+	private $user_email = '';
 	
 	/**
-	 * @var		PyIS_DPD_HelpScout_API_Drip $password The Account ID the API Key belongs to. Yep, we need both.
+	 * @var			String $api_endpoint Holds set API Endpoint
 	 * @since		1.0.0
 	 */
-	private $password = '';
-	
-	/**
-	 * @var			PyIS_DPD_HelpScout_API_Drip $api_endpoint Holds set API Endpoint
-	 * @since		1.0.0
-	 */
-	public $api_endpoint = 'https://api.getdrip.com/v2/<account_id>';
+	public $api_endpoint = 'https://api.getdpd.com/v2';
 
 	/**
-	 * PyIS_DPD_HelpScout_API_Drip constructor.
+	 * PyIS_DPD_HelpScout_API_DPD constructor.
 	 * 
 	 * @since		1.0.0
 	 */
-	function __construct( $api_key, $account_id, $password ) {
+	function __construct( $user_email, $api_key ) {
 
+		$this->user_email = trim( $user_email );
 		$this->api_key = trim( $api_key );
 		
-		// Construct the appropriate API Endpoint		
-		$this->account_id = trim( $account_id );
-		$this->api_endpoint = str_replace( '<account_id>', $this->account_id, $this->api_endpoint );
-		
-		$this->password = $password;
-		
 		$this->set_headers( array(
-			'Authorization' => 'Basic ' . base64_encode( $this->api_key . ':' . $this->password ),
-			'Content-Type' => 'application/vnd.api+json',
+			'Authorization' => 'Basic ' . base64_encode( $this->user_email . ':' . $this->api_key ),
 		) );
 
+	}
+	
+	/**
+	 * Get a DPD Customer Object by Email
+	 * 
+	 * @param		string $email Email Address
+	 *                             
+	 * @access		public
+	 * @since		1.0.0
+	 * @return		object DPD Customer Object on success, false on failure
+	 */
+	public function get_customer_by_email( $email ) {
+		
+		$customers = $this->get( 'customers?email=' . $email );
+		
+		// No matches found
+		if ( ! is_array( $customers ) ) return false;
+		
+		// Return first result
+		return reset( $customers );
+		
 	}
 
 }
