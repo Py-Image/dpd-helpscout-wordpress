@@ -13,13 +13,13 @@ defined( 'ABSPATH' ) || die();
 abstract class PyIS_DPD_HelpScout_API_Class {
 	
 	/**
-	 * @var			PyIS_DPD_HelpScout_API_Class $api_endpoint Holds set API Endpoint
+	 * @var			string $api_endpoint Holds set API Endpoint
 	 * @since		1.0.0
 	 */
 	public $api_endpoint = '';
 	
 	/**
-	 * @var			PyIS_DPD_HelpScout_API_Class $headers The Headers sent to the API
+	 * @var			array $headers The Headers sent to the API
 	 * @since		1.0.0
 	 */
 	private $headers = array();
@@ -47,7 +47,7 @@ abstract class PyIS_DPD_HelpScout_API_Class {
 	public function delete( $method, $args = array(), $timeout = 10 ) {
 		return $this->make_request( 'delete', $method, $args, $timeout );
 	}
-
+	
 	/**
 	 * Make an HTTP GET request - for retrieving data
 	 * 
@@ -62,7 +62,7 @@ abstract class PyIS_DPD_HelpScout_API_Class {
 	public function get( $method, $args = array(), $timeout = 10 ) {
 		return $this->make_request( 'get', $method, $args, $timeout );
 	}
-
+	
 	/**
 	 * Make an HTTP PATCH request - for performing partial updates
 	 * 
@@ -77,7 +77,7 @@ abstract class PyIS_DPD_HelpScout_API_Class {
 	public function patch( $method, $args = array(), $timeout = 10 ) {
 		return $this->make_request( 'patch', $method, $args, $timeout );
 	}
-
+	
 	/**
 	 * Make an HTTP POST request - for creating and updating items
 	 * 
@@ -92,7 +92,7 @@ abstract class PyIS_DPD_HelpScout_API_Class {
 	public function post( $method, $args = array(), $timeout = 10 ) {
 		return $this->make_request( 'post', $method, $args, $timeout );
 	}
-
+	
 	/**
 	 * Make an HTTP PUT request - for creating new items
 	 * 
@@ -107,9 +107,11 @@ abstract class PyIS_DPD_HelpScout_API_Class {
 	public function put( $method, $args = array(), $timeout = 10 ) {
 		return $this->make_request( 'put', $method, $args, $timeout );
 	}
-
+	
 	/**
 	 * Performs the underlying HTTP request
+	 * wp_remote_request() stopped working, possibly due to wp-includes/certificates/ca-bundle.crt not being updated for 2 years? Not sure
+	 * cURL implementation based on https://github.com/DripEmail/drip-php/blob/master/Drip_API.class.php
 	 * 
 	 * @param		string 	$http_verb  The HTTP verb to use: get, post, put, patch, delete
 	 * @param		string	$method		The API method to be called
@@ -121,18 +123,45 @@ abstract class PyIS_DPD_HelpScout_API_Class {
 	 * @return		array|false 		Assoc array of API response, decoded from JSON
 	 */
 	private function make_request( $http_verb, $method, $args = array(), $timeout = 10 ) {
-
-		$args = wp_parse_args( $args, array(
-			'method' => $http_verb,
-			'timeout' => $timeout,
-			'headers' => $this->headers,
-		) );
 		
 		$url = $this->api_endpoint . '/' . $method;
 		
-		$response = wp_remote_request( $url, $args );
-
-		return json_decode( $response['body'] );
+		$ch = curl_init();
+		
+		curl_setopt( $ch, CURLOPT_FRESH_CONNECT, true );
+        curl_setopt( $ch, CURLOPT_FORBID_REUSE, true );
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+        curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
+        curl_setopt( $ch, CURLOPT_TIMEOUT, $timeout );
+        curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, $timeout );
+		
+		if ( $http_verb !== 'get' ) {
+			curl_setopt( $ch, CURLOPT_CUSTOMREQUEST, strtoupper( $http_verb ) );
+		}
+		
+		if ( ! empty( $args ) ) {
+			if ( ( isset( $args['__req'] ) && strtolower( $args['__req'] ) == 'get' ) || 
+				$http_verb == 'get' ) {
+				
+                unset( $args['__req'] );
+                $url .= '?' . http_build_query( $args );
+				
+            }
+			elseif ( $http_verb == 'post' || 
+					$http_verb == 'delete' ) {
+				
+                $params_str = is_array( $args ) ? json_encode( $args ) : $args;
+                curl_setopt( $ch, CURLOPT_POSTFIELDS, $params_str );
+				
+            }
+			
+        }
+		
+		curl_setopt( $ch, CURLOPT_URL, $url);
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $this->headers );
+		
+		$buffer = curl_exec( $ch );
+		return json_decode( $buffer );
 		
 	}
 	

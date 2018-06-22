@@ -45,7 +45,7 @@ class PyIS_DPD_HelpScout_API_DPD extends PyIS_DPD_HelpScout_API_Class {
 		$this->api_key = trim( $api_key );
 		
 		$this->set_headers( array(
-			'Authorization' => 'Basic ' . base64_encode( $this->user_email . ':' . $this->api_key ),
+			'Authorization: Basic ' . base64_encode( $this->user_email . ':' . $this->api_key ),
 		) );
 
 	}
