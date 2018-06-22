@@ -71,7 +71,7 @@ class PyIS_DPD_HelpScout_REST {
 			
 		}
 		
-		$this->respond( json_encode( PYISDPDHELPSCOUT()->dpd_api->get_customer_by_email( $this->helpscout_data['customer']['email'] ) ) );
+		$this->respond( json_encode( PYISDPDHELPSCOUT()->dpd_api->get_customer_purchases_by_email( $this->helpscout_data['customer']['email'] ) ) );
 		exit;
 		
 		// Use Helpscout Data to get data from DDP

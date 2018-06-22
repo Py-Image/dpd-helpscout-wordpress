@@ -70,5 +70,25 @@ class PyIS_DPD_HelpScout_API_DPD extends PyIS_DPD_HelpScout_API_Class {
 		return reset( $customers );
 		
 	}
+	
+	/**
+	 * Get DPD Purchases by Customer Email
+	 * 
+	 * @param		string $email Email Address
+	 *                             
+	 * @access		public
+	 * @since		1.0.0
+	 * @return		array  Array of Purchase Objects
+	 */
+	public function get_customer_purchases_by_email( $email ) {
+		
+		$purchases = $this->get( 'purchases?customer_email=' . $email );
+		
+		// No matches found
+		if ( ! is_array( $purchases ) ) return false;
+		
+		return $purchases;
+		
+	}
 
 }
