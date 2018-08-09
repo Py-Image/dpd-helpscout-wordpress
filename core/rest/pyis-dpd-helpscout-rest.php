@@ -109,7 +109,7 @@ class PyIS_DPD_HelpScout_REST {
 		$posted_data = $this->get_incoming_data();
 		$this->helpscout_data = json_decode( $posted_data['helpscout_data'], true );
 		
-		// Local testing. Remove later
+		// Local testing. Remove later. Due to sending data via cURL
 		$this->helpscout_data = $posted_data['helpscout_data'];
 		
 		// Ensure the request is valid. Also ensures random people aren't abusing the endpoint
@@ -125,7 +125,7 @@ class PyIS_DPD_HelpScout_REST {
 		$options = new ChromeOptions();
 		$options->addArguments(array(
 			'--start-maximized',
-			//'--no-sandbox', // Needed in my weird local environment setup
+			//'--no-sandbox', // Needed in my weird local environment setup when running as root with xserver
 		) );
 		
 		$capabilities->setCapability( ChromeOptions::CAPABILITY, $options );
