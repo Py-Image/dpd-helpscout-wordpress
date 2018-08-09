@@ -36,6 +36,7 @@ defined( 'ABSPATH' ) || die();
 					<span class="hidden-input purchase_id" style="display: none;"><?php echo $download->purchase_id; ?></span>
 					<span class="hidden-input id" style="display: none;"><?php echo $download->id; ?></span>
 					<span class="hidden-input customer-id" style="display: none;"><?php echo $purchase->customer->id; ?></span>
+					<span class="hidden-input helpscout-secret-key" style="display: none;"><?php echo get_option( 'pyis_dpd_helpscout_secret_key' ); ?></span>
 
 					<ul class="indent">
 
