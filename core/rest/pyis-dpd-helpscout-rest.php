@@ -144,14 +144,16 @@ class PyIS_DPD_HelpScout_REST {
 		// wait until the page is loaded
 		// We wait for the Username field specifically
 		$driver->wait()->until(
-			WebDriverExpectedCondition::presenceOfElementLocated( WebDriverBy::id( 'username' ) )
+			WebDriverExpectedCondition::visibilityOfElementLocated( WebDriverBy::id( 'username' ) )
 		);
 		
+		// Using sendKeys() here seems to happen too quickly, so it types about halfway and then overwrites the beginning of the screen
 		$driver->findElement( WebDriverBy::id( 'username' ) )->click();
-		$driver->getKeyboard()->sendKeys( get_option( 'pyis_dpd_account_id' ) );
+		$driver->executeScript( 'document.getElementById( "username" ).value = "' . get_option( 'pyis_dpd_account_id' ) . '";' );
 		
+		// Password _must_ be sent using sendKeys()
 		$driver->findElement( WebDriverBy::id( 'password' ) )->click();
-		$driver->getKeyboard()->sendKeys( get_option( 'pyis_dpd_account_password' ) ); // submit the whole form
+		$driver->findElement( WebDriverBy::id( 'password' ) )->click()->sendKeys( get_option( 'pyis_dpd_account_password' ) );
 		
 		$driver->findElement( WebDriverBy::tagName( 'form' ) )->submit();
 		
