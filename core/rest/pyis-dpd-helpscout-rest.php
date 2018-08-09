@@ -139,7 +139,7 @@ class PyIS_DPD_HelpScout_REST {
 		
 		// check request signature
 		if ( isset( $_SERVER['HTTP_X_HELPSCOUT_SIGNATURE'] ) && 
-			$_SERVER['HTTP_X_HELPSCOUT_SIGNATURE'] == $this->hash_secret_key( get_option( 'pyis_dpd_helpscout_secret_key' ) ) ) {
+			$_SERVER['HTTP_X_HELPSCOUT_SIGNATURE'] == self::hash_secret_key( get_option( 'pyis_dpd_helpscout_secret_key' ), $this->helpscout_data ) ) {
 			return true;
 		}
 		
@@ -151,14 +151,15 @@ class PyIS_DPD_HelpScout_REST {
 	 * Hashes the Secret Key to match the Signature from HelpScout
 	 * 
 	 * @param		string $secret_key Secret Key stored in WP Database
+	 * @@param		array HelpScout Data
 	 *                                                    
-	 * @access		private
+	 * @access		public
 	 * @since		1.0.0
 	 * @return		string Hashed Secret Key
 	 */
-	private function hash_secret_key( $secret_key ) {
+	public static function hash_secret_key( $secret_key, $helpscout_data ) {
 		
-		return base64_encode( hash_hmac( 'sha1', json_encode( $this->helpscout_data ), $secret_key, true ) );
+		return base64_encode( hash_hmac( 'sha1', json_encode( $helpscout_data ), $secret_key, true ) );
 		
 	}
 	
@@ -191,6 +192,9 @@ class PyIS_DPD_HelpScout_REST {
 	 * @return		string HTML
 	 */
 	public function dpd_row( $email, $purchases ) {
+		
+		// Scoping for passing through the Secret Key
+		$helpscout_data = $this->helpscout_data;
 		
 		ob_start();
 		
