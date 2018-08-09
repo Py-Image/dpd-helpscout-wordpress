@@ -96,9 +96,11 @@ class PyIS_DPD_HelpScout_REST {
 	 */
 	public function regenerate_data() {
 		
+		// We can't use $this->get_incoming_data() because we are passing other things in $_POST too
+		// https://stackoverflow.com/a/44291958
 		if ( isset( $_POST['helpscout_data'] ) ) {
 		
-			// Puts it in the same format as when we initially read it
+			// Puts it in the same format as when we initially read it in $this->get_data()
 			$this->helpscout_data = json_decode( stripslashes( $_POST['helpscout_data'] ), true );
 			
 		}
