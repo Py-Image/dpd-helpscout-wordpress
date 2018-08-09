@@ -175,15 +175,14 @@ class PyIS_DPD_HelpScout_REST {
 	 * Hashes the Secret Key to match the Signature from HelpScout
 	 * 
 	 * @param		string $secret_key Secret Key stored in WP Database
-	 * @@param		array HelpScout Data
 	 *                                                    
-	 * @access		public
+	 * @access		private
 	 * @since		1.0.0
 	 * @return		string Hashed Secret Key
 	 */
-	public static function hash_secret_key( $secret_key, $helpscout_data ) {
+	private function hash_secret_key( $secret_key ) {
 		
-		return base64_encode( hash_hmac( 'sha1', json_encode( $helpscout_data ), $secret_key, true ) );
+		return base64_encode( hash_hmac( 'sha1', json_encode( $this->helpscout_data ), $secret_key, true ) );
 		
 	}
 	
@@ -197,13 +196,18 @@ class PyIS_DPD_HelpScout_REST {
 	private function build_response_html() {
 		
 		// build HTML output
-		$html = '';
+		$html = '<div id="dpd-helpscout-content">';
 		
-		$html .= '<span id="dpd-helpscout-data" class="hidden-input" style="display: none;">' . json_encode( $this->helpscout_data ) . '</span>';
+			$html .= '<span id="dpd-helpscout-data" class="hidden-input" style="display: none;">' . json_encode( $this->helpscout_data ) . '</span>';
+			$html .= '<span id="dpd-helpscout-secret-key" class="hidden-input" style="display: none;">' . $this->hash_secret_key( get_option( 'pyis_dpd_helpscout_secret_key' ) ) . '</span>';
+
+			$html .= '<span id="dpd-helpscout-chrome-extension-loading" class="badge red">' . __( 'Waiting for Chrome Extension...', 'pyis-dpd-helpscout' ) . '</span>';
+
+			foreach ( $this->dpd_data as $email => $purchases ) {
+				$html .= str_replace( '\t', '', $this->dpd_row( $email, $purchases ) );
+			}
 		
-		foreach ( $this->dpd_data as $email => $purchases ) {
-			$html .= str_replace( '\t', '', $this->dpd_row( $email, $purchases ) );
-		}
+		$html .= '</div>';
 		
 		return $html;
 		
