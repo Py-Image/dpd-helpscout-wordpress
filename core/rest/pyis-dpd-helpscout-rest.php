@@ -10,6 +10,14 @@
 
 defined( 'ABSPATH' ) || die();
 
+// Only way to get these loaded without putting my Class under their Namespace it seems
+use Facebook\WebDriver\Remote\DesiredCapabilities;
+use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\WebDriverBy;
+use Facebook\WebDriver\WebDriverElement;
+use Facebook\WebDriver\WebDriverExpectedCondition;
+use Facebook\WebDriver\Chrome\ChromeOptions;
+
 class PyIS_DPD_HelpScout_REST {
 
 	public $dpd_data;
@@ -110,25 +118,28 @@ class PyIS_DPD_HelpScout_REST {
 			exit;
 		}
 		
-		$this->respond( 'success' );
-		
-		// https://github.com/facebook/php-webdriver via Composer
-		require_once PyIS_DPD_HelpScout_DIR . '/core/library/phpwebdriver/vendor/autoload.php';
-		
 		// start Chrome with 5 second timeout
 		$host = 'http://localhost:4444/wd/hub'; // this is the default
 		$capabilities = DesiredCapabilities::chrome();
-		$driver = RemoteWebDriver::create( $host, $capabilities, 5000 );
 		
-		$driver->get( 'https://getdpd.com/' );
+		$options = new ChromeOptions();
+		$options->addArguments(array(
+			'--start-maximized',
+			//'--no-sandbox', // Needed in my weird local environment setup
+		) );
+		
+		$capabilities->setCapability( ChromeOptions::CAPABILITY, $options );
+		
+		$driver = RemoteWebDriver::create( $host, $capabilities, 5000 );
 
 		// Ensure we're logged out
 		$driver->manage()->deleteAllCookies();
 		
-		$link = $driver->findElement(
-			WebDriverBy::partialLinkText( 'login' )
+		$driver->get( 'https://getdpd.com/login' );
+		
+		$driver->wait()->until(
+			WebDriverExpectedCondition::titleContains( 'Dashboard' )
 		);
-		$link->click();
 		
 		// wait until the page is loaded
 		// We wait for the Username field specifically
@@ -136,19 +147,23 @@ class PyIS_DPD_HelpScout_REST {
 			WebDriverExpectedCondition::presenceOfElementLocated( WebDriverBy::id( 'username' ) )
 		);
 		
-		$driver->findElement( WebDriverBy::id( 'username' ) )
-			->sendKeys( get_option( 'pyis_dpd_account_id' ) );
+		$driver->findElement( WebDriverBy::id( 'username' ) )->click();
+		$driver->getKeyboard()->sendKeys( get_option( 'pyis_dpd_account_id' ) );
 		
-		$driver->findElement( WebDriverBy::id( 'password' ) )
-			->sendKeys( get_option( 'pyis_dpd_account_password' ) )
-			->submit(); // submit the whole form\
+		$driver->findElement( WebDriverBy::id( 'password' ) )->click();
+		$driver->getKeyboard()->sendKeys( get_option( 'pyis_dpd_account_password' ) ); // submit the whole form
+		
+		$driver->findElement( WebDriverBy::tagName( 'form' ) )->submit();
 		
 		// We're logged in
 		$driver->wait()->until(
-			WebDriverExpectedCondition::titleContains( 'Dashboard' )
+			WebDriverExpectedCondition::presenceOfElementLocated( WebDriverBy::xpath( "//a[@href='/logout']" ) )
 		);
 		
-		$this->respond( "The title is '" . $driver->getTitle() . "'\n" );
+		$this->respond( "Logged in, boiii" );
+		
+		$driver->close();
+		
 		exit;
 		
 	}

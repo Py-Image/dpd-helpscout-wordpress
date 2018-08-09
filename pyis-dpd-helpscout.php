@@ -275,6 +275,9 @@ if ( ! class_exists( 'PyIS_DPD_HelpScout' ) ) {
             
             require_once PyIS_DPD_HelpScout_DIR . '/core/api/pyis-dpd-helpscout-dpd-api.php';
             $this->dpd_api = new PyIS_DPD_HelpScout_API_DPD( $account_id, $api_key );
+			
+			// This just gets rid of some annoying Namespace confusion if I load it any other way
+			require_once PyIS_DPD_HelpScout_DIR . '/core/library/load-phpwebdriver.php';
             
             require_once PyIS_DPD_HelpScout_DIR . '/core/rest/pyis-dpd-helpscout-rest.php';
             $this->rest = new PyIS_DPD_HelpScout_REST();
