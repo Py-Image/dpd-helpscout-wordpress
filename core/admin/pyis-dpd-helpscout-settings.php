@@ -199,7 +199,7 @@ class PyIS_DPD_HelpScout_Settings {
 				'no_init' => true,
 				'option_field' => true,
 				'description' => '<p class="description">' . 
-									__( 'This is used by Selenium to regenerate Download URLs.', 'pyis-dpd-helpscout' ) . 
+									__( 'This is used by Selenium to regenerate Download URLs and for API Requests.', 'pyis-dpd-helpscout' ) . 
 								 '</p>',
 				'description_tip' => false,
 				'input_atts' => array(
