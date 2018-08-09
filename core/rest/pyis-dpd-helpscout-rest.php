@@ -96,20 +96,13 @@ class PyIS_DPD_HelpScout_REST {
 	 */
 	public function regenerate_data() {
 		
-		// We can't use $this->get_incoming_data() because we are passing other things in $_POST too
-		// https://stackoverflow.com/a/44291958
-		if ( isset( $_POST['helpscout_data'] ) ) {
+		// Capture incoming JSON from HelpScout
+		// It is in a slightly different format due to us passing multiple things through this time around
+		$posted_data = $this->get_incoming_data();
+		$this->helpscout_data = json_decode( $posted_data['helpscout_data'], true );
 		
-			// Puts it in the same format as when we initially read it in $this->get_data()
-			$this->helpscout_data = json_decode( stripslashes( $_POST['helpscout_data'] ), true );
-			
-		}
-		else {
-			
-			$this->respond( __( 'Access Denied', 'pyis-dpd-helpscout' ) );
-			exit;
-			
-		}
+		// Local testing. Remove later
+		$this->helpscout_data = $posted_data['helpscout_data'];
 		
 		// Ensure the request is valid. Also ensures random people aren't abusing the endpoint
 		if ( ! $this->validate() ) {
@@ -118,7 +111,6 @@ class PyIS_DPD_HelpScout_REST {
 		}
 		
 		$this->respond( 'success' );
-		exit;
 		
 		// https://github.com/facebook/php-webdriver via Composer
 		require_once PyIS_DPD_HelpScout_DIR . '/core/library/phpwebdriver/vendor/autoload.php';
@@ -127,6 +119,37 @@ class PyIS_DPD_HelpScout_REST {
 		$host = 'http://localhost:4444/wd/hub'; // this is the default
 		$capabilities = DesiredCapabilities::chrome();
 		$driver = RemoteWebDriver::create( $host, $capabilities, 5000 );
+		
+		$driver->get( 'https://getdpd.com/' );
+
+		// Ensure we're logged out
+		$driver->manage()->deleteAllCookies();
+		
+		$link = $driver->findElement(
+			WebDriverBy::partialLinkText( 'login' )
+		);
+		$link->click();
+		
+		// wait until the page is loaded
+		// We wait for the Username field specifically
+		$driver->wait()->until(
+			WebDriverExpectedCondition::presenceOfElementLocated( WebDriverBy::id( 'username' ) )
+		);
+		
+		$driver->findElement( WebDriverBy::id( 'username' ) )
+			->sendKeys( get_option( 'pyis_dpd_account_id' ) );
+		
+		$driver->findElement( WebDriverBy::id( 'password' ) )
+			->sendKeys( get_option( 'pyis_dpd_account_password' ) )
+			->submit(); // submit the whole form\
+		
+		// We're logged in
+		$driver->wait()->until(
+			WebDriverExpectedCondition::titleContains( 'Dashboard' )
+		);
+		
+		$this->respond( "The title is '" . $driver->getTitle() . "'\n" );
+		exit;
 		
 	}
 	
@@ -163,7 +186,7 @@ class PyIS_DPD_HelpScout_REST {
 		
 		// check request signature
 		if ( isset( $_SERVER['HTTP_X_HELPSCOUT_SIGNATURE'] ) && 
-			$_SERVER['HTTP_X_HELPSCOUT_SIGNATURE'] == self::hash_secret_key( get_option( 'pyis_dpd_helpscout_secret_key' ), $this->helpscout_data ) ) {
+			$_SERVER['HTTP_X_HELPSCOUT_SIGNATURE'] == $this->hash_secret_key( get_option( 'pyis_dpd_helpscout_secret_key' ) ) ) {
 			return true;
 		}
 		
