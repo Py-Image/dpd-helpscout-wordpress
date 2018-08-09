@@ -96,6 +96,28 @@ class PyIS_DPD_HelpScout_REST {
 	 */
 	public function regenerate_data() {
 		
+		if ( isset( $_POST['helpscout_data'] ) ) {
+		
+			// Puts it in the same format as when we initially read it
+			$this->helpscout_data = json_decode( stripslashes( $_POST['helpscout_data'] ), true );
+			
+		}
+		else {
+			
+			$this->respond( __( 'Access Denied', 'pyis-dpd-helpscout' ) );
+			exit;
+			
+		}
+		
+		// Ensure the request is valid. Also ensures random people aren't abusing the endpoint
+		if ( ! $this->validate() ) {
+			$this->respond( __( 'Access Denied', 'pyis-dpd-helpscout' ) );
+			exit;
+		}
+		
+		$this->respond( 'success' );
+		exit;
+		
 		// https://github.com/facebook/php-webdriver via Composer
 		require_once PyIS_DPD_HelpScout_DIR . '/core/library/phpwebdriver/vendor/autoload.php';
 		
@@ -174,6 +196,9 @@ class PyIS_DPD_HelpScout_REST {
 		
 		// build HTML output
 		$html = '';
+		
+		$html .= '<span id="dpd-helpscout-data" class="hidden-input" style="display: none;">' . json_encode( $this->helpscout_data ) . '</span>';
+		
 		foreach ( $this->dpd_data as $email => $purchases ) {
 			$html .= str_replace( '\t', '', $this->dpd_row( $email, $purchases ) );
 		}
