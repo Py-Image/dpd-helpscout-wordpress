@@ -12,6 +12,7 @@ defined( 'ABSPATH' ) || die();
 
 class PyIS_DPD_HelpScout_REST {
 
+	public $dpd_data;
 
     /**
 	 * PyIS_DPD_HelpScout_REST constructor.
@@ -65,17 +66,16 @@ class PyIS_DPD_HelpScout_REST {
 			//exit;
 		}
 		
+		$this->dpd_data = array();
+		
 		foreach ( $this->helpscout_data['customer']['emails'] as $email ) {
 			
+			// Use Helpscout Data to get data from DPD
+			$purchases = PYISDPDHELPSCOUT()->dpd_api->get_customer_purchases_by_email( $email );
 			
+			$this->dpd_data[ $email ] = $purchases; 
 			
 		}
-		
-		$this->respond( json_encode( PYISDPDHELPSCOUT()->dpd_api->get_customer_purchases_by_email( $this->helpscout_data['customer']['email'] ) ) );
-		exit;
-		
-		// Use Helpscout Data to get data from DDP
-		$this->dpd_data = PYISDPDHELPSCOUT()->dpd_api->get( 'subscribers/' . $this->helpscout_data['customer']['email'] );
 		
 		// Build HTML out of our data
 		$html = $this->build_response_html();
@@ -158,8 +158,8 @@ class PyIS_DPD_HelpScout_REST {
 		
 		// build HTML output
 		$html = '';
-		foreach ( $this->dpd_data->subscribers[0]->tags as $tag ) {
-			$html .= str_replace( '\t', '', $this->dpd_row( $tag ) );
+		foreach ( $this->dpd_data as $email => $purchases ) {
+			$html .= str_replace( '\t', '', $this->dpd_row( $email, $purchases ) );
 		}
 		
 		return $html;
@@ -175,11 +175,11 @@ class PyIS_DPD_HelpScout_REST {
 	 * @since		1.0.0
 	 * @return		string HTML
 	 */
-	public function dpd_row( $tag ) {
+	public function dpd_row( $email, $purchases ) {
 		
 		ob_start();
 		
-		include PYIS_DPD_HelpScout_DIR . 'core/views/pyis-dpd-helpscout-row.php';
+		include PyIS_DPD_HelpScout_DIR . 'core/views/pyis-dpd-helpscout-row.php';
 		
 		$html = ob_get_clean();
 		
