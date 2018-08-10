@@ -131,33 +131,47 @@ class PyIS_DPD_HelpScout_REST {
 		
 		$this->dpd_login( $driver );
 		
-		// Go to the Purchase Page
-		$driver->get( 'https://getdpd.com/purchase/show?id=' . $posted_data['purchase_id'] );
+		try {
 		
-		$driver->wait()->until(
-			WebDriverExpectedCondition::titleContains( 'Purchase' )
-		);
-		
-		// Click link to resend the purchase email
-		$driver->findElement( WebDriverBy::xpath( "//a[starts-with(@href, '/purchase/resend')]" ) )->click();
-		
-		$driver->wait()->until(
-			WebDriverExpectedCondition::titleContains( 'Resend Purchase Email' )
-		);
-		
-		// Submit the form
-		$driver->findElement( WebDriverBy::xpath( "//form[starts-with(@action, '/purchase/resend')]" ) )->submit();
+			// Go to the Purchase Page
+			$driver->get( 'https://getdpd.com/purchase/show?id=' . $posted_data['purchase_id'] );
 
-		$driver->wait()->until(
-			WebDriverExpectedCondition::textToBePresentInElement( WebDriverBy::id( 'page-header' ), 'Success!' )
-		);
-		
-		// Grabbing by ID page-content may also work, but I wanted to restrict this to less text for less chance for error
-		preg_match( '/https:\/\/getdpd.com\/.*/', $driver->findElement( WebDriverBy::className( 'container_12' ) )->getText(), $download_link );
-		
-		$driver->close();
-		
-		$this->respond( sprintf( __( 'The new download link is %s', 'pyis-dpd-helpscout' ), $download_link ) );
+			$driver->wait()->until(
+				WebDriverExpectedCondition::titleContains( 'Purchase' )
+			);
+
+			// Click link to resend the purchase email
+			$driver->findElement( WebDriverBy::xpath( "//a[starts-with(@href, '/purchase/resend')]" ) )->click();
+
+			$driver->wait()->until(
+				WebDriverExpectedCondition::titleContains( 'Resend Purchase Email' )
+			);
+
+			// Submit the form
+			$driver->findElement( WebDriverBy::xpath( "//form[starts-with(@action, '/purchase/resend')]" ) )->submit();
+
+			$driver->wait()->until(
+				WebDriverExpectedCondition::textToBePresentInElement( WebDriverBy::id( 'page-header' ), 'Success!' )
+			);
+
+			// Grabbing by ID page-content may also work, but I wanted to restrict this to less text for less chance for error
+			preg_match( '/https:\/\/getdpd.com\/.*/', $driver->findElement( WebDriverBy::className( 'container_12' ) )->getText(), $download_link );
+
+			$driver->close();
+
+			$this->respond( sprintf( __( "The new download link is \n\n%s", 'pyis-dpd-helpscout' ), $download_link[0] ) );
+			
+		}
+		catch ( Exception $exception ) {
+			
+			// This lets us "throw" the Exception without actually throwing it. Thereby allowing our response message to be returned
+			error_log( "Caught $exception" );
+			
+			$driver->close();
+			
+			$this->respond( __( 'Failed to resend the Download Link.', 'pyis-dpd-helpscout' ), 500 );
+			
+		}
 		
 	}
 	
@@ -194,29 +208,43 @@ class PyIS_DPD_HelpScout_REST {
 		
 		$this->dpd_login( $driver );
 		
-		// Go to Customer Page
-		$driver->get( 'https://getdpd.com/customer/show/' . $posted_data['customer_id'] );
+		try {
 		
-		$driver->wait()->until(
-			WebDriverExpectedCondition::titleContains( 'Customer' )
-		);
-		
-		// Click link to add a new Activation
-		$driver->findElement( WebDriverBy::xpath( "//a[contains(@href, '/addactivation/')]" ) )->click();
-		
-		// Accept the Alert
-		$driver->switchTo()->alert()->accept();
-		
-		$driver->wait()->until(
-			WebDriverExpectedCondition::presenceOfElementLocated( WebDriverBy::className( "success" ) )
-		);
-		
-		// Grab the number of maximum activations from the resulting page
-		$activations = preg_replace( '/\D/si', '', $driver->findElement( WebDriverBy::className( "success" ) )->getText() );
-		
-		$driver->close();
-		
-		$this->respond( sprintf( __( 'Customer now has %s maximum device activations.', 'pyis-dpd-helpscout' ), $activations ) );
+			// Go to Customer Page
+			$driver->get( 'https://getdpd.com/customer/show/' . $posted_data['customer_id'] );
+
+			$driver->wait()->until(
+				WebDriverExpectedCondition::titleContains( 'Customer' )
+			);
+
+			// Click link to add a new Activation
+			$driver->findElement( WebDriverBy::xpath( "//a[contains(@href, '/addactivation/')]" ) )->click();
+
+			// Accept the Alert
+			$driver->switchTo()->alert()->accept();
+
+			$driver->wait()->until(
+				WebDriverExpectedCondition::presenceOfElementLocated( WebDriverBy::className( "success" ) )
+			);
+
+			// Grab the number of maximum activations from the resulting page
+			$activations = preg_replace( '/\D/si', '', $driver->findElement( WebDriverBy::className( "success" ) )->getText() );
+
+			$driver->close();
+
+			$this->respond( sprintf( __( 'Customer now has %s maximum device activations.', 'pyis-dpd-helpscout' ), $activations ) );
+			
+		}
+		catch ( Exception $exception ) {
+			
+			// This lets us "throw" the Exception without actually throwing it. Thereby allowing our response message to be returned
+			error_log( "Caught $exception" );
+			
+			$driver->close();
+			
+			$this->respond( __( 'Failed to increase device activations.', 'pyis-dpd-helpscout' ), 500 );
+			
+		}
 		
 	}
 	
@@ -417,31 +445,68 @@ class PyIS_DPD_HelpScout_REST {
 	 */
 	private function dpd_login( $driver ) {
 		
-		$driver->get( 'https://getdpd.com/login' );
+		try {
+		
+			$driver->get( 'https://getdpd.com/login' );
+
+			$driver->wait()->until(
+				WebDriverExpectedCondition::titleContains( 'Dashboard' )
+			);
+			
+			$this->webdriver_wait_for_document_ready( $driver );
+
+			// wait until the page is loaded
+			// We wait for the Username field specifically
+			$driver->wait()->until(
+				WebDriverExpectedCondition::visibilityOfElementLocated( WebDriverBy::id( 'username' ) )
+			);
+
+			// Using sendKeys() here seems to happen too quickly, so it types about halfway and then overwrites the beginning of the screen
+			$driver->executeScript( 'document.getElementById( "username" ).value = "' . get_option( 'pyis_dpd_account_id' ) . '";' );
+
+			// Password _must_ be sent using sendKeys()
+			$driver->findElement( WebDriverBy::id( 'password' ) )->click();
+			$driver->findElement( WebDriverBy::id( 'password' ) )->click()->sendKeys( get_option( 'pyis_dpd_account_password' ) );
+
+			$driver->findElement( WebDriverBy::tagName( 'form' ) )->submit();
+			
+			$this->webdriver_wait_for_document_ready( $driver );
+
+			// We're logged in
+			$driver->wait()->until(
+				WebDriverExpectedCondition::presenceOfElementLocated( WebDriverBy::xpath( "//a[@href='/logout']" ) )
+			);
+			
+		}
+		catch ( Exception $exception ) {
+			
+			// This lets us "throw" the Exception without actually throwing it. Thereby allowing our response message to be returned
+			error_log( "Caught $exception" );
+			
+			$driver->close();
+			
+			$this->respond( __( 'Failed to Login to DPD. Try again later.', 'pyis-dpd-helpscout' ), 500 );
+			
+		}
+		
+	}
+	
+	/**
+	 * Wait until Document is ready. This may help Logins be more consistent
+	 * 
+	 * @param		object $driver RemoteWebDriver for ChromeDriver
+	 *                                            
+	 * @access 		private
+	 * @since		{{VERSION}}
+	 * @return		void
+	 */
+	private function webdriver_wait_for_document_ready( $driver ) {
 		
 		$driver->wait()->until(
-			WebDriverExpectedCondition::titleContains( 'Dashboard' )
-		);
-		
-		// wait until the page is loaded
-		// We wait for the Username field specifically
-		$driver->wait()->until(
-			WebDriverExpectedCondition::visibilityOfElementLocated( WebDriverBy::id( 'username' ) )
-		);
-		
-		// Using sendKeys() here seems to happen too quickly, so it types about halfway and then overwrites the beginning of the screen
-		$driver->findElement( WebDriverBy::id( 'username' ) )->click();
-		$driver->executeScript( 'document.getElementById( "username" ).value = "' . get_option( 'pyis_dpd_account_id' ) . '";' );
-		
-		// Password _must_ be sent using sendKeys()
-		$driver->findElement( WebDriverBy::id( 'password' ) )->click();
-		$driver->findElement( WebDriverBy::id( 'password' ) )->click()->sendKeys( get_option( 'pyis_dpd_account_password' ) );
-		
-		$driver->findElement( WebDriverBy::tagName( 'form' ) )->submit();
-		
-		// We're logged in
-		$driver->wait()->until(
-			WebDriverExpectedCondition::presenceOfElementLocated( WebDriverBy::xpath( "//a[@href='/logout']" ) )
+			function () use ( $driver ) {
+				return $driver->executeScript( 'return document.readyState' ) == 'complete';
+			},
+			'Document not ready'
 		);
 		
 	}
