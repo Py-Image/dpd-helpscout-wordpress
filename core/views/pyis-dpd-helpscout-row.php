@@ -36,16 +36,16 @@ defined( 'ABSPATH' ) || die();
 							
 							<li>
 
-								<a href="#dpd-resend-downlad-link" class="dpd-resend-download-link" title="<?php _e( 'Resend Download Link', 'pyis-dpd-helpscout' ); ?>">
-									<span class="badge green"><?php _e( 'Resend Download Link', 'pyis-dpd-helpscout' ); ?></span>
+								<a id="dpd_endpoint_resend-purchase-email" class="dpd-resend-purchase-email dpd-submit badge green" style="height: auto; margin-bottom: 0;">
+									<?php _e( 'Resend Download Link', 'pyis-dpd-helpscout' ); ?>
 								</a>
 								
 							</li>
 							
 							<li>
 
-								<a href="#dpd-add-activation" class="dpd-radd-activation" title="<?php _e( 'Add Activation', 'pyis-dpd-helpscout' ); ?>">
-									<span class="badge green"><?php _e( 'Add Activation', 'pyis-dpd-helpscout' ); ?></span>
+								<a id="dpd_endpoint_add-activation" class="dpd-add-activation dpd-submit badge green" style="height: auto; margin-bottom: 0;">
+									<?php _e( 'Add Activation', 'pyis-dpd-helpscout' ); ?>
 								</a>
 								
 							</li>

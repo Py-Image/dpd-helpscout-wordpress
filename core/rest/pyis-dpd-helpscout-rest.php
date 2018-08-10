@@ -279,7 +279,7 @@ class PyIS_DPD_HelpScout_REST {
 		$helpscout_data = json_decode( $posted_data['helpscout_data'], true );
 		
 		// Local testing. Remove later. Due to sending data via cURL
-		$helpscout_data = $posted_data['helpscout_data'];
+		//$helpscout_data = $posted_data['helpscout_data'];
 		
 		return $helpscout_data;
 		
