@@ -1,11 +1,11 @@
 <?php
 /**
- * Creates REST Endpoints
+ * Loads php-webdriver into its Namespace
  *
  * @since 0.1.0
  *
  * @package PyIS_DPD_HelpScout
- * @subpackage PyIS_DPD_HelpScout/core/rest
+ * @subpackage PyIS_DPD_HelpScout/core/library
  */
 
 namespace Facebook\WebDriver;
