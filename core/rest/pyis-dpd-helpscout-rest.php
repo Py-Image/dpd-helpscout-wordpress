@@ -107,7 +107,7 @@ class PyIS_DPD_HelpScout_REST {
      * @since		1.0.0
      * @return      string JSON
 	 */
-	public function resend_purchase_email() {
+	public function resend_purchase_email( $request ) {
 		
 		// Capture incoming JSON from HelpScout
 		// It is in a slightly different format due to us passing multiple things through this time around
@@ -125,7 +125,64 @@ class PyIS_DPD_HelpScout_REST {
 		
 		$driver->close();
 		
-		exit;
+	}
+	
+	/**
+	 * Callback for our REST Endpoint to add a Device Activation for the Customer
+	 * 
+     * @param       object $request WP_REST_Request Object
+     * 
+     * @access		public
+     * @since		1.0.0
+     * @return      string JSON
+	 */
+	public function add_activation() {
+		
+		// Holds all data
+		$posted_data = $this->get_incoming_data();
+		
+		// Capture incoming JSON from HelpScout
+		// It is in a slightly different format due to us passing multiple things through this time around
+		$this->helpscout_data = $this->get_incoming_data_chrome_extension();
+		
+		// Ensure the request is valid. Also ensures random people aren't abusing the endpoint
+		if ( ! $this->validate() ) {
+			$this->respond( __( 'Access Denied', 'pyis-dpd-helpscout' ) );
+			exit;
+		}
+		
+		if ( ! isset( $posted_data['customer_id'] ) ) {
+			$this->respond( __( 'Access Denied', 'pyis-dpd-helpscout' ) );
+			exit;
+		}
+		
+		$driver = $this->get_chrome_driver();
+		
+		$this->dpd_login( $driver );
+		
+		// Go to Customer Page
+		$driver->get( 'https://getdpd.com/customer/show/' . $posted_data['customer_id'] );
+		
+		$driver->wait()->until(
+			WebDriverExpectedCondition::titleContains( 'Customer' )
+		);
+		
+		// Click link to add a new Activation
+		$driver->findElement( WebDriverBy::xpath( "//a[contains(@href, '/addactivation/')]" ) )->click();
+		
+		// Accept the Alert
+		$driver->switchTo()->alert()->accept();
+		
+		$driver->wait()->until(
+			WebDriverExpectedCondition::presenceOfElementLocated( WebDriverBy::className( "success" ) )
+		);
+		
+		// Grab the number of maximum activations from the resulting page
+		$activations = preg_replace( '/\D/si', '', $driver->findElement( WebDriverBy::className( "success" ) )->getText() );
+		
+		$driver->close();
+		
+		$this->respond( sprintf( __( 'Customer now has %s maximum device activations.', 'pyis-dpd-helpscout' ), $activations ) );
 		
 	}
 	
@@ -352,9 +409,6 @@ class PyIS_DPD_HelpScout_REST {
 		$driver->wait()->until(
 			WebDriverExpectedCondition::presenceOfElementLocated( WebDriverBy::xpath( "//a[@href='/logout']" ) )
 		);
-		
-		$this->respond( "Logged in, boiii" );
-		exit;
 		
 	}
 
