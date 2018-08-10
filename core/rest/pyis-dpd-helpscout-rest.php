@@ -109,6 +109,9 @@ class PyIS_DPD_HelpScout_REST {
 	 */
 	public function resend_purchase_email( $request ) {
 		
+		// Holds all data
+		$posted_data = $this->get_incoming_data();
+		
 		// Capture incoming JSON from HelpScout
 		// It is in a slightly different format due to us passing multiple things through this time around
 		$this->helpscout_data = $this->get_incoming_data_chrome_extension();
@@ -119,9 +122,40 @@ class PyIS_DPD_HelpScout_REST {
 			exit;
 		}
 		
+		if ( ! isset( $posted_data['purchase_id'] ) ) {
+			$this->respond( __( 'Access Denied', 'pyis-dpd-helpscout' ) );
+			exit;
+		}
+		
 		$driver = $this->get_chrome_driver();
 		
 		$this->dpd_login( $driver );
+		
+		// Go to the Purchase Page
+		$driver->get( 'https://getdpd.com/purchase/show?id=' . $posted_data['purchase_id'] );
+		
+		$driver->wait()->until(
+			WebDriverExpectedCondition::titleContains( 'Purchase' )
+		);
+		
+		// Click link to resend the purchase email
+		$driver->findElement( WebDriverBy::xpath( "//a[starts-with(@href, '/purchase/resend')]" ) )->click();
+		
+		$driver->wait()->until(
+			WebDriverExpectedCondition::titleContains( 'Resend Purchase Email' )
+		);
+		
+		// Submit the form
+		$driver->findElement( WebDriverBy::xpath( "//form[starts-with(@action, '/purchase/resend')]" ) )->submit();
+
+		$driver->wait()->until(
+			WebDriverExpectedCondition::textToBePresentInElement( WebDriverBy::id( 'page-header' ), 'Success!' )
+		);
+		
+		// Grabbing by ID page-content may also work, but I wanted to restrict this to less text for less chance for error
+		preg_match( '/https:\/\/getdpd.com\/.*/', $driver->findElement( WebDriverBy::className( 'container_12' ) )->getText(), $download_link );
+		
+		$this->respond( sprintf( __( 'The new download link is %s', 'pyis-dpd-helpscout' ), $download_link ) );
 		
 		$driver->close();
 		
