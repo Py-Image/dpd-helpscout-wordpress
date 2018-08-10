@@ -47,9 +47,14 @@ class PyIS_DPD_HelpScout_REST {
             'callback' => array( $this, 'get_data' ),
         ) );
 		
-		register_rest_route( 'pyis/v1', '/helpscout/dpd/regenerate-data', array(
+		register_rest_route( 'pyis/v1', '/helpscout/dpd/resend-purchase-email', array(
             'methods' => 'POST',
-            'callback' => array( $this, 'regenerate_data' ),
+            'callback' => array( $this, 'resend_purchase_email' ),
+        ) );
+		
+		register_rest_route( 'pyis/v1', '/helpscout/dpd/add-activation', array(
+            'methods' => 'POST',
+            'callback' => array( $this, 'add_activation' ),
         ) );
 
     }
@@ -102,15 +107,11 @@ class PyIS_DPD_HelpScout_REST {
      * @since		1.0.0
      * @return      string JSON
 	 */
-	public function regenerate_data() {
+	public function resend_purchase_email() {
 		
 		// Capture incoming JSON from HelpScout
 		// It is in a slightly different format due to us passing multiple things through this time around
-		$posted_data = $this->get_incoming_data();
-		$this->helpscout_data = json_decode( $posted_data['helpscout_data'], true );
-		
-		// Local testing. Remove later. Due to sending data via cURL
-		$this->helpscout_data = $posted_data['helpscout_data'];
+		$this->helpscout_data = $this->get_incoming_data_chrome_extension();
 		
 		// Ensure the request is valid. Also ensures random people aren't abusing the endpoint
 		if ( ! $this->validate() ) {
@@ -118,51 +119,9 @@ class PyIS_DPD_HelpScout_REST {
 			exit;
 		}
 		
-		// start Chrome with 5 second timeout
-		$host = 'http://localhost:4444/wd/hub'; // this is the default
-		$capabilities = DesiredCapabilities::chrome();
+		$driver = $this->get_chrome_driver();
 		
-		$options = new ChromeOptions();
-		$options->addArguments(array(
-			'--start-maximized',
-			//'--no-sandbox', // Needed in my weird local environment setup when running as root with xserver
-		) );
-		
-		$capabilities->setCapability( ChromeOptions::CAPABILITY, $options );
-		
-		$driver = RemoteWebDriver::create( $host, $capabilities, 5000 );
-
-		// Ensure we're logged out
-		$driver->manage()->deleteAllCookies();
-		
-		$driver->get( 'https://getdpd.com/login' );
-		
-		$driver->wait()->until(
-			WebDriverExpectedCondition::titleContains( 'Dashboard' )
-		);
-		
-		// wait until the page is loaded
-		// We wait for the Username field specifically
-		$driver->wait()->until(
-			WebDriverExpectedCondition::visibilityOfElementLocated( WebDriverBy::id( 'username' ) )
-		);
-		
-		// Using sendKeys() here seems to happen too quickly, so it types about halfway and then overwrites the beginning of the screen
-		$driver->findElement( WebDriverBy::id( 'username' ) )->click();
-		$driver->executeScript( 'document.getElementById( "username" ).value = "' . get_option( 'pyis_dpd_account_id' ) . '";' );
-		
-		// Password _must_ be sent using sendKeys()
-		$driver->findElement( WebDriverBy::id( 'password' ) )->click();
-		$driver->findElement( WebDriverBy::id( 'password' ) )->click()->sendKeys( get_option( 'pyis_dpd_account_password' ) );
-		
-		$driver->findElement( WebDriverBy::tagName( 'form' ) )->submit();
-		
-		// We're logged in
-		$driver->wait()->until(
-			WebDriverExpectedCondition::presenceOfElementLocated( WebDriverBy::xpath( "//a[@href='/logout']" ) )
-		);
-		
-		$this->respond( "Logged in, boiii" );
+		$this->dpd_login( $driver );
 		
 		$driver->close();
 		
@@ -183,6 +142,27 @@ class PyIS_DPD_HelpScout_REST {
 		$json = file_get_contents( 'php://input' );
 		
 		return json_decode( $json, true );
+		
+	}
+	
+	/**
+	 * When we grab data from our Chrome Extension, since the HelpScout Data isn't the only thing being passed through POST we need to transform the data slightly for validate() to work correctly
+	 * 
+	 * @access		private
+	 * @since		{{VERSION}}
+	 * @return		array Associative Array representation of the JSON
+	 */
+	private function get_incoming_data_chrome_extension() {
+		
+		// Capture incoming JSON from HelpScout
+		// It is in a slightly different format due to us passing multiple things through this time around
+		$posted_data = $this->get_incoming_data();
+		$helpscout_data = json_decode( $posted_data['helpscout_data'], true );
+		
+		// Local testing. Remove later. Due to sending data via cURL
+		$helpscout_data = $posted_data['helpscout_data'];
+		
+		return $helpscout_data;
 		
 	}
 	
@@ -302,6 +282,79 @@ class PyIS_DPD_HelpScout_REST {
 		echo json_encode( $response );
 		
 		die();
+		
+	}
+	
+	/**
+	 * Creates and returns our RemoteWebDriver object
+	 * 
+	 * @access		private
+	 * @since		{{VERSION}}
+	 * @return		object RemoteWebDriver for ChromeDriver
+	 */
+	private function get_chrome_driver() {
+		
+		// start Chrome with 5 second timeout
+		$host = 'http://localhost:4444/wd/hub'; // this is the default
+		$capabilities = DesiredCapabilities::chrome();
+		
+		$options = new ChromeOptions();
+		$options->addArguments(array(
+			'--start-maximized',
+			//'--no-sandbox', // Needed in my weird local environment setup when running as root with xserver
+		) );
+		
+		$capabilities->setCapability( ChromeOptions::CAPABILITY, $options );
+		
+		$driver = RemoteWebDriver::create( $host, $capabilities, 5000 );
+
+		// Ensure we're logged out
+		$driver->manage()->deleteAllCookies();
+		
+		return $driver;
+		
+	}
+	
+	/**
+	 * Logs into DPD using the stored credentials
+	 * 
+	 * @param		object $driver RemoteWebDriver for ChromeDriver
+	 *                                            
+	 * @access		private
+	 * @since		{{VERSION}}
+	 * @return		void
+	 */
+	private function dpd_login( $driver ) {
+		
+		$driver->get( 'https://getdpd.com/login' );
+		
+		$driver->wait()->until(
+			WebDriverExpectedCondition::titleContains( 'Dashboard' )
+		);
+		
+		// wait until the page is loaded
+		// We wait for the Username field specifically
+		$driver->wait()->until(
+			WebDriverExpectedCondition::visibilityOfElementLocated( WebDriverBy::id( 'username' ) )
+		);
+		
+		// Using sendKeys() here seems to happen too quickly, so it types about halfway and then overwrites the beginning of the screen
+		$driver->findElement( WebDriverBy::id( 'username' ) )->click();
+		$driver->executeScript( 'document.getElementById( "username" ).value = "' . get_option( 'pyis_dpd_account_id' ) . '";' );
+		
+		// Password _must_ be sent using sendKeys()
+		$driver->findElement( WebDriverBy::id( 'password' ) )->click();
+		$driver->findElement( WebDriverBy::id( 'password' ) )->click()->sendKeys( get_option( 'pyis_dpd_account_password' ) );
+		
+		$driver->findElement( WebDriverBy::tagName( 'form' ) )->submit();
+		
+		// We're logged in
+		$driver->wait()->until(
+			WebDriverExpectedCondition::presenceOfElementLocated( WebDriverBy::xpath( "//a[@href='/logout']" ) )
+		);
+		
+		$this->respond( "Logged in, boiii" );
+		exit;
 		
 	}
 
