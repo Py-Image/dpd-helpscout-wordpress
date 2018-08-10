@@ -155,9 +155,9 @@ class PyIS_DPD_HelpScout_REST {
 		// Grabbing by ID page-content may also work, but I wanted to restrict this to less text for less chance for error
 		preg_match( '/https:\/\/getdpd.com\/.*/', $driver->findElement( WebDriverBy::className( 'container_12' ) )->getText(), $download_link );
 		
-		$this->respond( sprintf( __( 'The new download link is %s', 'pyis-dpd-helpscout' ), $download_link ) );
-		
 		$driver->close();
+		
+		$this->respond( sprintf( __( 'The new download link is %s', 'pyis-dpd-helpscout' ), $download_link ) );
 		
 	}
 	
