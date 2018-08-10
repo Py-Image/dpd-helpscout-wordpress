@@ -50,7 +50,6 @@ defined( 'ABSPATH' ) || die();
 
 							<li><?php _e( 'Downloaded:', 'pyis-dpd-helpscout' ); ?> <?php echo $download->download_count; ?></li>
 							<li><?php _e( 'Can be downloaded:', 'pyis-dpd-helpscout' ); ?> <?php echo ( ! $download->download_limit ) ? __( 'Unlimited', 'pyis-dpd-helpscout' ) : $download->download_limit; ?></li>
-							<li><?php _e( 'Expires:', 'pyis-dpd-helpscout' ); ?> <?php echo get_date_from_gmt( date( 'Y-m-d H:i:s', $download->expires_at ), get_option( 'date_format', 'F j, Y' ) . ' @ ' . get_option( 'time_format', 'g:i a' ) . ' T' ); ?></li>
 
 						</ul>
 
