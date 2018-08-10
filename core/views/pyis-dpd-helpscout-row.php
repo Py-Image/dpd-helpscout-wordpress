@@ -22,42 +22,65 @@ defined( 'ABSPATH' ) || die();
 	<?php if ( $purchases ) : ?>
 	
 		<?php foreach ( $purchases as $purchase ) : ?>
+	
+			<li>
 
-			<?php foreach ( $purchase->line_items as $download ) : ?>
+				<div class="dpd-form">
 
-				<li>
+					<strong><i class="icon-cart"></i> #<?php echo $purchase->id; ?></strong> - 
+					<strong><span class="dpd-purchase-total">$<?php echo $purchase->total; ?></span></strong>
 
-					<div class="dpd-form">
+					<div class="button-container" style="display: none;">
+						
+						<ul class="unstyled" style="margin: .5em 0 .5em 0;">
+							
+							<li>
 
-						<?php echo $download->product_name; ?>
+								<a href="#dpd-resend-downlad-link" class="dpd-resend-download-link" title="<?php _e( 'Resend Download Link', 'pyis-dpd-helpscout' ); ?>">
+									<span class="badge green"><?php _e( 'Resend Download Link', 'pyis-dpd-helpscout' ); ?></span>
+								</a>
+								
+							</li>
+							
+							<li>
 
-						<span class="button-container" style="display: none;">
-
-							 - 
-
-							<a href="#dpd-generate" class="dpd-regenerate" title="<?php _e( 'Regenerate Access', 'pyis-dpd-helpscout' ); ?>">
-								<span class="badge green"><?php _e( 'Regenerate Access', 'pyis-dpd-helpscout' ); ?></span>
-							</a>
-
-						</span>
-
-						<span class="hidden-input product_id" style="display: none;"><?php echo $download->product_id; ?></span>
-						<span class="hidden-input purchase_id" style="display: none;"><?php echo $download->purchase_id; ?></span>
-						<span class="hidden-input id" style="display: none;"><?php echo $download->id; ?></span>
-						<span class="hidden-input customer_id" style="display: none;"><?php echo $purchase->customer->id; ?></span>
-
-						<ul class="indent">
-
-							<li><?php _e( 'Downloaded:', 'pyis-dpd-helpscout' ); ?> <?php echo $download->download_count; ?></li>
-							<li><?php _e( 'Can be downloaded:', 'pyis-dpd-helpscout' ); ?> <?php echo ( ! $download->download_limit ) ? __( 'Unlimited', 'pyis-dpd-helpscout' ) : $download->download_limit; ?></li>
-
+								<a href="#dpd-add-activation" class="dpd-radd-activation" title="<?php _e( 'Add Activation', 'pyis-dpd-helpscout' ); ?>">
+									<span class="badge green"><?php _e( 'Add Activation', 'pyis-dpd-helpscout' ); ?></span>
+								</a>
+								
+							</li>
+							
 						</ul>
 
 					</div>
 
-				</li>
+					<span class="hidden-input purchase_id" style="display: none;"><?php echo $purchase->id; ?></span>
+					<span class="hidden-input customer_id" style="display: none;"><?php echo $purchase->customer->id; ?></span>
 
-			<?php endforeach; ?>
+					<ul class="indent">
+						
+						<?php foreach ( $purchase->line_items as $download ) : ?>
+						
+							<li>
+
+								<?php echo $download->product_name; ?>
+
+								<ul class="indent">
+
+										<li><?php _e( 'Downloaded:', 'pyis-dpd-helpscout' ); ?> <?php echo $download->download_count; ?></li>
+										<li><?php _e( 'Can be downloaded:', 'pyis-dpd-helpscout' ); ?> <?php echo ( ! $download->download_limit ) ? __( 'Unlimited', 'pyis-dpd-helpscout' ) : $download->download_limit; ?></li>
+
+								</ul>
+
+							</li>
+						
+						<?php endforeach; ?>
+
+					</ul>
+
+				</div>
+
+			</li>
 
 		<?php endforeach; ?>
 	
