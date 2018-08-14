@@ -413,24 +413,33 @@ class PyIS_DPD_HelpScout_REST {
 	 */
 	private function get_chrome_driver() {
 		
-		// start Chrome with 5 second timeout
-		$host = 'http://localhost:4444/wd/hub'; // this is the default
-		$capabilities = DesiredCapabilities::chrome();
+		try {
 		
-		$options = new ChromeOptions();
-		$options->addArguments(array(
-			'--start-maximized',
-			//'--no-sandbox', // Needed in my weird local environment setup when running as root with xserver
-		) );
-		
-		$capabilities->setCapability( ChromeOptions::CAPABILITY, $options );
-		
-		$driver = RemoteWebDriver::create( $host, $capabilities, 5000 );
+			// start Chrome with 5 second timeout
+			$host = 'http://localhost:4444/wd/hub'; // this is the default
+			$capabilities = DesiredCapabilities::chrome();
 
-		// Ensure we're logged out
-		$driver->manage()->deleteAllCookies();
-		
-		return $driver;
+			$options = new ChromeOptions();
+			$options->addArguments(array(
+				'--start-maximized',
+				//'--no-sandbox', // Needed in my weird local environment setup when running as root with xserver
+			) );
+
+			$capabilities->setCapability( ChromeOptions::CAPABILITY, $options );
+
+			$driver = RemoteWebDriver::create( $host, $capabilities, 5000 );
+
+			// Ensure we're logged out
+			$driver->manage()->deleteAllCookies();
+
+			return $driver;
+			
+		}
+		catch ( Exception $exception ) {
+			
+			$this->respond( __( 'Failed to connect to Selenium. Try again later.', 'pyis-dpd-helpscout' ), 500 );
+			
+		}
 		
 	}
 	
