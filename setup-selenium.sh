@@ -29,7 +29,6 @@ sudo mv -f ~/chromedriver /usr/local/bin/chromedriver
 sudo chown root:root /usr/local/bin/chromedriver
 sudo chmod 0755 /usr/local/bin/chromedriver
 
-# Install headless GUI for firefox.  'Xvfb is a display server that performs graphical operations in memory'
-#
-echo "Installing XVFB (headless GUI for Firefox) ..."
+# Xvfb is a display server that performs graphical operations in memory
+echo "Installing headless dependencies ..."
 sudo apt-get install xvfb -y
