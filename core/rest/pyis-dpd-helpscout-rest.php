@@ -339,6 +339,7 @@ class PyIS_DPD_HelpScout_REST {
 		
 			$html .= '<span id="dpd-helpscout-data" class="hidden-input" style="display: none;">' . json_encode( $this->helpscout_data ) . '</span>';
 			$html .= '<span id="dpd-helpscout-secret-key" class="hidden-input" style="display: none;">' . $this->hash_secret_key( get_option( 'pyis_dpd_helpscout_secret_key' ) ) . '</span>';
+			$html .= '<span id="dpd-helpscout-url" class="hidden-input" style="display: none;">' . preg_replace( '/^http(?:s)?:/i', '', rtrim( get_site_url(), '/' ) ) . '</span>';
 
 			$html .= '<span id="dpd-helpscout-chrome-extension-loading" class="badge red">' . __( 'Waiting for Chrome Extension...', 'pyis-dpd-helpscout' ) . '</span>';
 
