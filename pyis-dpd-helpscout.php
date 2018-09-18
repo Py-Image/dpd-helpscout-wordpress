@@ -148,7 +148,7 @@ if ( ! class_exists( 'PyIS_DPD_HelpScout' ) ) {
                 if ( ! $api_key || ! $account_id || ! $account_password ) {
 
                     $this->admin_notices[] = sprintf( 
-                        _x( 'In order to communcate with DPD, you must enter some credentials in the %s%s Settings Page%s!', 'DPD API Credentials Needed', 'pyis-dpd-helpscout' ), 
+                        _x( 'In order to communicate with DPD, you must enter some credentials in the %s%s Settings Page%s!', 'DPD API Credentials Needed', 'pyis-dpd-helpscout' ), 
                         '<a href="' . get_admin_url( null, 'options-general.php?page=pyis-dpd-helpscout' ) . '" title="' . sprintf( _x( '%s Settings', 'Settings Page Link from Error Message', 'pyis-dpd-helpscout' ), $this->plugin_data['Name'] ) . '">',
                         '<strong>' . $this->plugin_data['Name'] . '</strong>', '</a>'
                     );
