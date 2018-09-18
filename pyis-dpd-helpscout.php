@@ -136,6 +136,22 @@ if ( ! class_exists( 'PyIS_DPD_HelpScout' ) ) {
 
                 }
 
+				if ( version_compare( phpversion(), '5.6' ) == -1 ) {
+
+                    $this->admin_notices[] = sprintf(
+                        _x( '%s requires your PHP Version to be at least v%s or higher!', 'Super Old PHP Version Error', 'pyis-dpd-helpscout' ),
+                        '<strong>' . $this->plugin_data['Name'] . '</strong>',
+                        '5.6'
+                    );
+
+                    if ( ! has_action( 'admin_notices', array( $this, 'admin_notices' ) ) ) {
+                        add_action( 'admin_notices', array( $this, 'admin_notices' ) );
+                    }
+
+                    return;
+
+                }
+
                 $api_key = get_option( 'pyis_dpd_api_key' );
                 $api_key = ( $api_key ) ? $api_key : '';
 
