@@ -155,11 +155,17 @@ class PyIS_DPD_HelpScout_REST {
 			);
 
 			// Grabbing by ID page-content may also work, but I wanted to restrict this to less text for less chance for error
-			preg_match( '/https:\/\/getdpd.com\/.*/', $driver->findElement( WebDriverBy::className( 'container_12' ) )->getText(), $download_link );
+			$match = preg_match( '/https:\/\/getdpd.com\/.*/', $driver->findElement( WebDriverBy::className( 'container_12' ) )->getText(), $download_link );
 
 			$driver->close();
 
-			$this->respond( sprintf( __( "The new download link is \n\n%s", 'pyis-dpd-helpscout' ), $download_link[0] ) );
+			$this->respond( 
+				__( "The new download link is:", 'pyis-dpd-helpscout' ),
+				200,
+				array(
+					'copy' => $match ? $download_link[0] : __( 'Download URL not Found', 'pyis-dpd-helpscout' ),
+				)
+			);
 			
 		}
 		catch ( Exception $exception ) {
@@ -382,14 +388,18 @@ class PyIS_DPD_HelpScout_REST {
 	 * 
 	 * @param		string  $html HTML to be sent to HelpScout
 	 * @param		integer $code HTTP Response Code. Defaults to 200
+	 * @param		array	Allows additional data to be sent back if needed
 	 *													   
 	 * @access		private
 	 * @since		1.0.0
 	 * @return		void
 	 */
-	private function respond( $html, $code = 200 ) {
+	private function respond( $html, $code = 200, $additional_data = array() ) {
 		
 		$response = array( 'html' => $html );
+		
+		// Don't let additional data overwrite our HTML message
+		$response = array_merge( $additional_data, $response );
 		
 		// Clear output, other plugins might have thrown dumb errors by now.
 		if ( ob_get_level() > 0 ) {
