@@ -79,10 +79,6 @@ class PyIS_DPD_HelpScout_REST {
 			exit;
 		}
 		
-		file_put_contents( PyIS_DPD_HelpScout_DIR . '/example-json/helpscout-data.json', json_encode( $this->helpscout_data ) );
-		
-		file_put_contents( PyIS_DPD_HelpScout_DIR . '/example-json/helpscout-secret-key.txt', $_SERVER['HTTP_X_HELPSCOUT_SIGNATURE'] );
-		
 		$this->dpd_data = array();
 		
 		foreach ( $this->helpscout_data['customer']['emails'] as $email ) {
@@ -96,8 +92,6 @@ class PyIS_DPD_HelpScout_REST {
 		
 		// Build HTML out of our data
 		$html = $this->build_response_html();
-		
-		file_put_contents( PyIS_DPD_HelpScout_DIR . '/example-json/helpscout-response.txt', $html );
 		
 		// Give HelpScout the HTML as JSON
 		$this->respond( $html );
