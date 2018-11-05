@@ -36,7 +36,7 @@ defined( 'ABSPATH' ) || die();
 							
 							<li>
 
-								<a id="dpd_endpoint_resend-purchase-email" class="dpd-resend-purchase-email dpd-submit badge green" style="height: auto; margin-bottom: 0;">
+								<a class="dpd_endpoint_resend-purchase-email dpd-submit badge green" style="height: auto; margin-bottom: 0;">
 									<?php _e( 'Resend Download Link', 'pyis-dpd-helpscout' ); ?>
 								</a>
 								
@@ -44,7 +44,7 @@ defined( 'ABSPATH' ) || die();
 							
 							<li>
 
-								<a id="dpd_endpoint_add-activation" class="dpd-add-activation dpd-submit badge green" style="height: auto; margin-bottom: 0;">
+								<a class="dpd_endpoint_add-activation dpd-submit badge green" style="height: auto; margin-bottom: 0;">
 									<?php _e( 'Add Activation', 'pyis-dpd-helpscout' ); ?>
 								</a>
 								
