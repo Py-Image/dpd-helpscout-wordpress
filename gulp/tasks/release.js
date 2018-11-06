@@ -33,12 +33,8 @@ gulp.task( 'release:copy', function( done ) {
 gulp.task( 'release:rename', function( done ) {
     
     // Grab Version from the appropriate file. This way it doesn't matter if I forget to update package.json
-    var sourceFile = '';
     if ( config.type == 'plugin' ) {
-        sourceFile = './' + packageName + '.php';
-    }
-    else {
-        sourceFile = './style.css';
+        sourceFile = './pyis-dpd-helpscout.php';
     }
     
     var mainFile = fs.readFileSync( sourceFile, 'utf8' ),
