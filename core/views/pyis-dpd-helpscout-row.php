@@ -30,33 +30,6 @@ defined( 'ABSPATH' ) || die();
 					<strong><i class="icon-cart"></i> #<?php echo $purchase->id; ?></strong> - 
 					<strong><span class="dpd-purchase-total">$<?php echo $purchase->total; ?></span></strong>
 
-					<div class="button-container" style="display: none;">
-						
-						<ul class="unstyled" style="margin: .5em 0 .5em 0;">
-							
-							<li>
-
-								<a class="dpd_endpoint_resend-purchase-email dpd-submit badge green" style="height: auto; margin-bottom: 0;">
-									<?php _e( 'Resend Download Link', 'pyis-dpd-helpscout' ); ?>
-								</a>
-								
-							</li>
-							
-							<li>
-
-								<a class="dpd_endpoint_add-activation dpd-submit badge green" style="height: auto; margin-bottom: 0;">
-									<?php _e( 'Add Activation', 'pyis-dpd-helpscout' ); ?>
-								</a>
-								
-							</li>
-							
-						</ul>
-
-					</div>
-
-					<span class="hidden-input purchase_id" style="display: none;"><?php echo $purchase->id; ?></span>
-					<span class="hidden-input customer_id" style="display: none;"><?php echo $purchase->customer->id; ?></span>
-
 					<ul class="indent">
 						
 						<?php foreach ( $purchase->line_items as $download ) : ?>

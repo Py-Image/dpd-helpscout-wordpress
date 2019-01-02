@@ -10,14 +10,6 @@
 
 defined( 'ABSPATH' ) || die();
 
-// Only way to get these loaded without putting my Class under their Namespace it seems
-use Facebook\WebDriver\Remote\DesiredCapabilities;
-use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Facebook\WebDriver\WebDriverBy;
-use Facebook\WebDriver\WebDriverElement;
-use Facebook\WebDriver\WebDriverExpectedCondition;
-use Facebook\WebDriver\Chrome\ChromeOptions;
-
 class PyIS_DPD_HelpScout_REST {
 
 	public $dpd_data;
@@ -45,16 +37,6 @@ class PyIS_DPD_HelpScout_REST {
         register_rest_route( 'pyis/v1', '/helpscout/dpd/get-data', array(
             'methods' => 'POST',
             'callback' => array( $this, 'get_data' ),
-        ) );
-		
-		register_rest_route( 'pyis/v1', '/helpscout/dpd/resend-purchase-email', array(
-            'methods' => 'POST',
-            'callback' => array( $this, 'resend_purchase_email' ),
-        ) );
-		
-		register_rest_route( 'pyis/v1', '/helpscout/dpd/add-activation', array(
-            'methods' => 'POST',
-            'callback' => array( $this, 'add_activation' ),
         ) );
 
     }
@@ -99,162 +81,6 @@ class PyIS_DPD_HelpScout_REST {
     }
 	
 	/**
-	 * Callback for our REST Endpoint to regenerate the Download URLs
-	 * 
-     * @param       object $request WP_REST_Request Object
-     * 
-     * @access		public
-     * @since		1.0.0
-     * @return      string JSON
-	 */
-	public function resend_purchase_email( $request ) {
-		
-		// Holds all data
-		$posted_data = $this->get_incoming_data();
-		
-		// Capture incoming JSON from HelpScout
-		// It is in a slightly different format due to us passing multiple things through this time around
-		$this->helpscout_data = $this->get_incoming_data_chrome_extension();
-		
-		// Ensure the request is valid. Also ensures random people aren't abusing the endpoint
-		if ( ! $this->validate() ) {
-			$this->respond( __( 'Access Denied', 'pyis-dpd-helpscout' ) );
-			exit;
-		}
-		
-		if ( ! isset( $posted_data['purchase_id'] ) ) {
-			$this->respond( __( 'Access Denied', 'pyis-dpd-helpscout' ) );
-			exit;
-		}
-		
-		$driver = $this->get_chrome_driver();
-		
-		$this->dpd_login( $driver );
-		
-		try {
-		
-			// Go to the Purchase Page
-			$driver->get( 'https://getdpd.com/purchase/show?id=' . $posted_data['purchase_id'] );
-
-			$driver->wait()->until(
-				WebDriverExpectedCondition::titleContains( 'Purchase' )
-			);
-
-			// Click link to resend the purchase email
-			$driver->findElement( WebDriverBy::xpath( "//a[starts-with(@href, '/purchase/resend')]" ) )->click();
-
-			$driver->wait()->until(
-				WebDriverExpectedCondition::titleContains( 'Resend Purchase Email' )
-			);
-
-			// Submit the form
-			$driver->findElement( WebDriverBy::xpath( "//form[starts-with(@action, '/purchase/resend')]" ) )->submit();
-
-			$driver->wait()->until(
-				WebDriverExpectedCondition::textToBePresentInElement( WebDriverBy::id( 'page-header' ), 'Success!' )
-			);
-
-			// Grabbing by ID page-content may also work, but I wanted to restrict this to less text for less chance for error
-			$match = preg_match( '/https:\/\/getdpd.com\/.*/', $driver->findElement( WebDriverBy::className( 'container_12' ) )->getText(), $download_link );
-
-			$driver->close();
-
-			$this->respond( 
-				__( "The new download link is:", 'pyis-dpd-helpscout' ),
-				200,
-				array(
-					'copy' => $match ? $download_link[0] : __( 'Download URL not Found', 'pyis-dpd-helpscout' ),
-				)
-			);
-			
-		}
-		catch ( Exception $exception ) {
-			
-			// This lets us "throw" the Exception without actually throwing it. Thereby allowing our response message to be returned
-			error_log( "Caught $exception" );
-			
-			$driver->close();
-			
-			$this->respond( __( 'Failed to resend the Download Link.', 'pyis-dpd-helpscout' ), 500 );
-			
-		}
-		
-	}
-	
-	/**
-	 * Callback for our REST Endpoint to add a Device Activation for the Customer
-	 * 
-     * @param       object $request WP_REST_Request Object
-     * 
-     * @access		public
-     * @since		1.0.0
-     * @return      string JSON
-	 */
-	public function add_activation() {
-		
-		// Holds all data
-		$posted_data = $this->get_incoming_data();
-		
-		// Capture incoming JSON from HelpScout
-		// It is in a slightly different format due to us passing multiple things through this time around
-		$this->helpscout_data = $this->get_incoming_data_chrome_extension();
-		
-		// Ensure the request is valid. Also ensures random people aren't abusing the endpoint
-		if ( ! $this->validate() ) {
-			$this->respond( __( 'Access Denied', 'pyis-dpd-helpscout' ) );
-			exit;
-		}
-		
-		if ( ! isset( $posted_data['customer_id'] ) ) {
-			$this->respond( __( 'Access Denied', 'pyis-dpd-helpscout' ) );
-			exit;
-		}
-		
-		$driver = $this->get_chrome_driver();
-		
-		$this->dpd_login( $driver );
-		
-		try {
-		
-			// Go to Customer Page
-			$driver->get( 'https://getdpd.com/customer/show/' . $posted_data['customer_id'] );
-
-			$driver->wait()->until(
-				WebDriverExpectedCondition::titleContains( 'Customer' )
-			);
-
-			// Click link to add a new Activation
-			$driver->findElement( WebDriverBy::xpath( "//a[contains(@href, '/addactivation/')]" ) )->click();
-
-			// Accept the Alert
-			$driver->switchTo()->alert()->accept();
-
-			$driver->wait()->until(
-				WebDriverExpectedCondition::presenceOfElementLocated( WebDriverBy::className( "success" ) )
-			);
-
-			// Grab the number of maximum activations from the resulting page
-			$activations = preg_replace( '/\D/si', '', $driver->findElement( WebDriverBy::className( "success" ) )->getText() );
-
-			$driver->close();
-
-			$this->respond( sprintf( __( 'Customer now has %s maximum device activations.', 'pyis-dpd-helpscout' ), $activations ) );
-			
-		}
-		catch ( Exception $exception ) {
-			
-			// This lets us "throw" the Exception without actually throwing it. Thereby allowing our response message to be returned
-			error_log( "Caught $exception" );
-			
-			$driver->close();
-			
-			$this->respond( __( 'Failed to increase device activations.', 'pyis-dpd-helpscout' ), 500 );
-			
-		}
-		
-	}
-	
-	/**
 	 * Captures incoming JSON
 	 * Stored as an Associative Array so we can use isset() which is more precise for our needs
 	 * 
@@ -267,27 +93,6 @@ class PyIS_DPD_HelpScout_REST {
 		$json = file_get_contents( 'php://input' );
 		
 		return json_decode( $json, true );
-		
-	}
-	
-	/**
-	 * When we grab data from our Chrome Extension, since the HelpScout Data isn't the only thing being passed through POST we need to transform the data slightly for validate() to work correctly
-	 * 
-	 * @access		private
-	 * @since		{{VERSION}}
-	 * @return		array Associative Array representation of the JSON
-	 */
-	private function get_incoming_data_chrome_extension() {
-		
-		// Capture incoming JSON from HelpScout
-		// It is in a slightly different format due to us passing multiple things through this time around
-		$posted_data = $this->get_incoming_data();
-		$helpscout_data = json_decode( $posted_data['helpscout_data'], true );
-		
-		// Local testing. Remove later. Due to sending data via cURL
-		//$helpscout_data = $posted_data['helpscout_data'];
-		
-		return $helpscout_data;
 		
 	}
 	
@@ -340,20 +145,11 @@ class PyIS_DPD_HelpScout_REST {
 	 */
 	private function build_response_html() {
 		
-		// build HTML output
-		$html = '<div id="dpd-helpscout-content">';
-		
-			$html .= '<span id="dpd-helpscout-data" class="hidden-input" style="display: none;">' . json_encode( $this->helpscout_data ) . '</span>';
-			$html .= '<span id="dpd-helpscout-secret-key" class="hidden-input" style="display: none;">' . $this->hash_secret_key( get_option( 'pyis_dpd_helpscout_secret_key' ) ) . '</span>';
-			$html .= '<span id="dpd-helpscout-url" class="hidden-input" style="display: none;">' . preg_replace( '/^http(?:s)?:/i', '', rtrim( get_site_url(), '/' ) ) . '</span>';
+		$html = '';
 
-			$html .= '<span id="dpd-helpscout-chrome-extension-loading" class="badge red">' . __( 'Waiting for Chrome Extension...', 'pyis-dpd-helpscout' ) . '</span>';
-
-			foreach ( $this->dpd_data as $email => $purchases ) {
-				$html .= str_replace( '\t', '', $this->dpd_row( $email, $purchases ) );
-			}
-		
-		$html .= '</div>';
+		foreach ( $this->dpd_data as $email => $purchases ) {
+			$html .= str_replace( '\t', '', $this->dpd_row( $email, $purchases ) );
+		}
 		
 		return $html;
 		
@@ -412,122 +208,6 @@ class PyIS_DPD_HelpScout_REST {
 		echo json_encode( $response );
 		
 		die();
-		
-	}
-	
-	/**
-	 * Creates and returns our RemoteWebDriver object
-	 * 
-	 * @access		private
-	 * @since		{{VERSION}}
-	 * @return		object RemoteWebDriver for ChromeDriver
-	 */
-	private function get_chrome_driver() {
-		
-		try {
-		
-			// start Chrome with 5 second timeout
-			$host = 'http://localhost:4444/wd/hub'; // this is the default
-			$capabilities = DesiredCapabilities::chrome();
-
-			$options = new ChromeOptions();
-			$options->addArguments(array(
-				'--start-maximized',
-				//'--no-sandbox', // Needed in my weird local environment setup when running as root with xserver
-			) );
-
-			$capabilities->setCapability( ChromeOptions::CAPABILITY, $options );
-
-			$driver = RemoteWebDriver::create( $host, $capabilities, 5000 );
-
-			// Ensure we're logged out
-			$driver->manage()->deleteAllCookies();
-
-			return $driver;
-			
-		}
-		catch ( Exception $exception ) {
-			
-			$this->respond( __( 'Failed to connect to Selenium. Try again later.', 'pyis-dpd-helpscout' ), 500 );
-			
-		}
-		
-	}
-	
-	/**
-	 * Logs into DPD using the stored credentials
-	 * 
-	 * @param		object $driver RemoteWebDriver for ChromeDriver
-	 *                                            
-	 * @access		private
-	 * @since		{{VERSION}}
-	 * @return		void
-	 */
-	private function dpd_login( $driver ) {
-		
-		try {
-		
-			$driver->get( 'https://getdpd.com/login' );
-
-			$driver->wait()->until(
-				WebDriverExpectedCondition::titleContains( 'Dashboard' )
-			);
-			
-			$this->webdriver_wait_for_document_ready( $driver );
-
-			// wait until the page is loaded
-			// We wait for the Username field specifically
-			$driver->wait()->until(
-				WebDriverExpectedCondition::visibilityOfElementLocated( WebDriverBy::id( 'username' ) )
-			);
-
-			// Using sendKeys() here seems to happen too quickly, so it types about halfway and then overwrites the beginning of the screen
-			$driver->executeScript( 'document.getElementById( "username" ).value = "' . get_option( 'pyis_dpd_account_id' ) . '";' );
-
-			// Password _must_ be sent using sendKeys()
-			$driver->findElement( WebDriverBy::id( 'password' ) )->click();
-			$driver->findElement( WebDriverBy::id( 'password' ) )->click()->sendKeys( get_option( 'pyis_dpd_account_password' ) );
-
-			$driver->findElement( WebDriverBy::tagName( 'form' ) )->submit();
-			
-			$this->webdriver_wait_for_document_ready( $driver );
-
-			// We're logged in
-			$driver->wait()->until(
-				WebDriverExpectedCondition::presenceOfElementLocated( WebDriverBy::xpath( "//a[@href='/logout']" ) )
-			);
-			
-		}
-		catch ( Exception $exception ) {
-			
-			// This lets us "throw" the Exception without actually throwing it. Thereby allowing our response message to be returned
-			error_log( "Caught $exception" );
-			
-			$driver->close();
-			
-			$this->respond( __( 'Failed to Login to DPD. Try again later.', 'pyis-dpd-helpscout' ), 500 );
-			
-		}
-		
-	}
-	
-	/**
-	 * Wait until Document is ready. This may help Logins be more consistent
-	 * 
-	 * @param		object $driver RemoteWebDriver for ChromeDriver
-	 *                                            
-	 * @access 		private
-	 * @since		{{VERSION}}
-	 * @return		void
-	 */
-	private function webdriver_wait_for_document_ready( $driver ) {
-		
-		$driver->wait()->until(
-			function () use ( $driver ) {
-				return $driver->executeScript( 'return document.readyState' ) == 'complete';
-			},
-			'Document not ready'
-		);
 		
 	}
 

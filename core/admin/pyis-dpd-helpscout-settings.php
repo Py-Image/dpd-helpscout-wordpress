@@ -180,6 +180,19 @@ class PyIS_DPD_HelpScout_Settings {
 					'required' => true,
 				),
 			),
+			'pyis_dpd_account_id' => array(
+				'type' => 'text',
+				'settings_label' => __( 'DPD Account Email Address', 'pyis-dpd-helpscout' ),
+				'no_init' => true,
+				'option_field' => true,
+				'description' => '<p class="description">' . 
+									__( 'This is needed for API Requests.', 'pyis-dpd-helpscout' ) . 
+								 '</p>',
+				'description_tip' => false,
+				'input_atts' => array(
+					'required' => true,
+				),
+			),
 			'pyis_dpd_api_key' => array(
 				'type' => 'text',
 				'settings_label' => __( 'DPD API Key', 'pyis-dpd-helpscout' ),
@@ -188,32 +201,6 @@ class PyIS_DPD_HelpScout_Settings {
 				'description' => '<a href="//getdpd.com/user/profile" target="_blank">' . 
 									__( 'Find your API Key Here', 'pyis-dpd-helpscout' ) . 
 								 '</a>',
-				'description_tip' => false,
-				'input_atts' => array(
-					'required' => true,
-				),
-			),
-			'pyis_dpd_account_id' => array(
-				'type' => 'text',
-				'settings_label' => __( 'DPD Account Email Address', 'pyis-dpd-helpscout' ),
-				'no_init' => true,
-				'option_field' => true,
-				'description' => '<p class="description">' . 
-									__( 'This is used by Selenium to regenerate Download URLs and for API Requests.', 'pyis-dpd-helpscout' ) . 
-								 '</p>',
-				'description_tip' => false,
-				'input_atts' => array(
-					'required' => true,
-				),
-			),
-			'pyis_dpd_account_password' => array(
-				'type' => 'password',
-				'settings_label' => __( 'DPD Account Password', 'pyis-dpd-helpscout' ),
-				'no_init' => true,
-				'option_field' => true,
-				'description' => '<p class="description">' . 
-									__( 'This is used by Selenium to regenerate Download URLs.', 'pyis-dpd-helpscout' ) . 
-								 '</p>',
 				'description_tip' => false,
 				'input_atts' => array(
 					'required' => true,
