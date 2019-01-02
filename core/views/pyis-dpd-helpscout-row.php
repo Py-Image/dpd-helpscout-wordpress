@@ -10,6 +10,10 @@
 
 defined( 'ABSPATH' ) || die();
 
+// This ensures the displayed Timestamp matches the site's Timezone
+$time = new \DateTime( 'now', new DateTimeZone( get_option( 'timezone_string', 'America/Detroit' ) ) );
+$timezone_offset = $time->format( 'Z' );
+
 ?>
 	
 <?php do_action( 'pyis_helpscout_dpd_before_email_group', $email, $purchases ); ?>
@@ -29,6 +33,9 @@ defined( 'ABSPATH' ) || die();
 
 					<strong><i class="icon-cart"></i> #<?php echo $purchase->id; ?></strong> - 
 					<strong><span class="dpd-purchase-total">$<?php echo $purchase->total; ?></span></strong>
+					<br />
+					<strong><i class="icon-calendar"></i> <?php echo date_i18n( get_option( 'date_format', 'F j, Y' ) . ' @ ' . get_option( 'time_format', 'g:i a' ), $purchase->created_at + $timezone_offset ); ?></strong>
+					<br /><br />
 
 					<ul class="indent">
 						
