@@ -1,9 +1,9 @@
 <?php
 /*
  * Plugin Name: PyImageSearch DPD+HelpScout
- * Plugin URL: https://github.com/Py-Image/PL_PYIS_ADDRESS_COLLECTION
- * Description: Displays DPD Information for a Customer in HelpScout and allows regenerating their Download URLs if the companion Chrome Extension is active
- * Version: 1.0.0a1
+ * Plugin URL: https://github.com/Py-Image/dpd-helpscout-wordpress
+ * Description: Displays DPD Information for a Customer in HelpScout
+ * Version: 1.0.0b1
  * Text Domain: pyis-dpd-helpscout
  * Author: Eric Defore
  * Author URI: http://realbigmarketing.com
