@@ -2,7 +2,7 @@
 /**
  * Creates REST Endpoints
  *
- * @since 0.1.0
+ * @since 1.0.0
  *
  * @package PyIS_DPD_HelpScout
  * @subpackage PyIS_DPD_HelpScout/core/rest
@@ -17,7 +17,7 @@ class PyIS_DPD_HelpScout_REST {
     /**
 	 * PyIS_DPD_HelpScout_REST constructor.
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 */
     function __construct() {
 
@@ -28,7 +28,7 @@ class PyIS_DPD_HelpScout_REST {
     /**
      * Creates a WP REST API route for CognitoForms to POST JSON tool_box
      * 
-     * @since       0.1.0
+     * @since       1.0.0
      * @access      public
      * @return      void
      */

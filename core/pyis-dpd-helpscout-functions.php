@@ -2,7 +2,7 @@
 /**
  * Provides helper functions.
  *
- * @since      0.1.0
+ * @since      1.0.0
  *
  * @package    PyIS_DPD_HelpScout
  * @subpackage PyIS_DPD_HelpScout/core
@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 /**
  * Returns the main plugin object
  *
- * @since 0.1.0
+ * @since 1.0.0
  *
  * @return PyIS_DPD_HelpScout
  */
@@ -25,7 +25,7 @@ function PYISDPDHELPSCOUT() {
 /**
  * Quick access to plugin field helpers.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @return RBM_FieldHelpers
  */
@@ -36,7 +36,7 @@ function pyis_dpd_helpscout_fieldhelpers() {
 /**
  * Initializes a field group for automatic saving.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param $group
  */
@@ -47,7 +47,7 @@ function pyis_dpd_helpscout_init_field_group( $group ) {
 /**
  * Gets a meta field helpers field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param string $name Field name.
  * @param string|int $post_ID Optional post ID.
@@ -64,7 +64,7 @@ function pyis_dpd_helpscout_get_field( $name, $post_ID = false, $default = '', $
 /**
  * Gets a option field helpers field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param string $name Field name.
  * @param mixed $default Default value if none is retrieved.
@@ -80,7 +80,7 @@ function pyis_dpd_helpscout_get_option_field( $name, $default = '', $args = arra
 /**
  * Outputs a text field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param array $args
  */
@@ -91,7 +91,7 @@ function pyis_dpd_helpscout_do_field_text( $args = array() ) {
 /**
  * Outputs a password field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param array $args
  */
@@ -102,7 +102,7 @@ function pyis_dpd_helpscout_do_field_password( $args = array() ) {
 /**
  * Outputs a textarea field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param array $args
  */
@@ -113,7 +113,7 @@ function pyis_dpd_helpscout_do_field_textarea( $args = array() ) {
 /**
  * Outputs a checkbox field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param array $args
  */
@@ -124,7 +124,7 @@ function pyis_dpd_helpscout_do_field_checkbox( $args = array() ) {
 /**
  * Outputs a toggle field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param array $args
  */
@@ -135,7 +135,7 @@ function pyis_dpd_helpscout_do_field_toggle( $args = array() ) {
 /**
  * Outputs a radio field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param array $args
  */
@@ -146,7 +146,7 @@ function pyis_dpd_helpscout_do_field_radio( $args = array() ) {
 /**
  * Outputs a select field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param array $args
  */
@@ -157,7 +157,7 @@ function pyis_dpd_helpscout_do_field_select( $args = array() ) {
 /**
  * Outputs a number field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param array $args
  */
@@ -168,7 +168,7 @@ function pyis_dpd_helpscout_do_field_number( $args = array() ) {
 /**
  * Outputs an image field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param array $args
  */
@@ -179,7 +179,7 @@ function pyis_dpd_helpscout_do_field_media( $args = array() ) {
 /**
  * Outputs a datepicker field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param array $args
  */
@@ -190,7 +190,7 @@ function pyis_dpd_helpscout_do_field_datepicker( $args = array() ) {
 /**
  * Outputs a timepicker field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param array $args
  */
@@ -201,7 +201,7 @@ function pyis_dpd_helpscout_do_field_timepicker( $args = array() ) {
 /**
  * Outputs a datetimepicker field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param array $args
  */
@@ -212,7 +212,7 @@ function pyis_dpd_helpscout_do_field_datetimepicker( $args = array() ) {
 /**
  * Outputs a colorpicker field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param array $args
  */
@@ -223,7 +223,7 @@ function pyis_dpd_helpscout_do_field_colorpicker( $args = array() ) {
 /**
  * Outputs a list field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param array $args
  */
@@ -234,7 +234,7 @@ function pyis_dpd_helpscout_do_field_list( $args = array() ) {
 /**
  * Outputs a hidden field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param array $args
  */
@@ -245,7 +245,7 @@ function pyis_dpd_helpscout_do_field_hidden( $args = array() ) {
 /**
  * Outputs a table field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param array $args
  */
@@ -256,7 +256,7 @@ function pyis_dpd_helpscout_do_field_table( $args = array() ) {
 /**
  * Outputs a HTML field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param array $args
  */
@@ -267,7 +267,7 @@ function pyis_dpd_helpscout_do_field_html( $args = array() ) {
 /**
  * Outputs a repeater field.
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param mixed $values
  */
@@ -278,7 +278,7 @@ function pyis_dpd_helpscout_do_field_repeater( $args = array() ) {
 /**
  * Outputs a hook. Useful for arbitrary HTML
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param mixed $values
  */
@@ -289,7 +289,7 @@ function pyis_dpd_helpscout_do_field_hook( $args = array() ) {
 /**
  * Outputs a String if a Callback Function does not exist for an Options Page Field
  *
- * @since 1.1.0
+ * @since 1.0.0
  *
  * @param array $args
  */

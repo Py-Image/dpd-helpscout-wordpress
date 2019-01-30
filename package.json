@@ -1,6 +1,6 @@
 {
     "name": "DPD_HelpScout_WordPress",
-    "version": "1.0.0b1",
+    "version": "1.0.0",
     "main": "gulpfile.js",
     "dependencies": {},
     "devDependencies": {

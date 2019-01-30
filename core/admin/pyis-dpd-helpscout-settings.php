@@ -2,7 +2,7 @@
 /**
  * PyImageSearch Address Collection Settings
  *
- * @since 0.1.0
+ * @since 1.0.0
  *
  * @package PyIS_DPD_HelpScout
  * @subpackage PyIS_DPD_HelpScout/core/admin
@@ -15,7 +15,7 @@ class PyIS_DPD_HelpScout_Settings {
     /**
 	 * PyIS_DPD_HelpScout_Settings constructor.
 	 *
-	 * @since 0.1.0
+	 * @since 1.0.0
 	 */
     function __construct() {
 
@@ -31,7 +31,7 @@ class PyIS_DPD_HelpScout_Settings {
      * Create the Admin Page to hold our Settings
      * 
      * @access      public
-     * @since       0.1.0
+     * @since       1.0.0
      * @return      void
      */
     public function create_admin_page() {
@@ -51,7 +51,7 @@ class PyIS_DPD_HelpScout_Settings {
      * Create the Content/Form for our Admin Page
      * 
      * @access      public
-     * @since       0.1.0
+     * @since       1.0.0
      * @return      void
      */
     public function admin_page_content() { ?>
@@ -80,7 +80,7 @@ class PyIS_DPD_HelpScout_Settings {
      * Register our Options so the Admin Page knows what to Save
      * 
      * @access      public
-     * @since       0.1.0
+     * @since       1.0.0
      * @return      void
      */
     public function register_options() {
@@ -121,7 +121,7 @@ class PyIS_DPD_HelpScout_Settings {
 	 * Outputs the Instructions for configuring the HelpScout App
 	 * 
 	 * @access		public
-	 * @since		1.1.0
+	 * @since		1.0.0
 	 * @param		array $args Unused
 	 */
 	public function helpscout_instructions( $args ) {
@@ -157,7 +157,7 @@ class PyIS_DPD_HelpScout_Settings {
 	 * Holds the Settings Array
 	 * 
 	 * @access		public
-	 * @since		1.1.0
+	 * @since		1.0.0
 	 * @return		array Settings Array
 	 */
 	public function get_settings() {

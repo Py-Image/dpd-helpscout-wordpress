@@ -3,7 +3,7 @@
  * Plugin Name: PyImageSearch DPD+HelpScout
  * Plugin URL: https://github.com/Py-Image/dpd-helpscout-wordpress
  * Description: Displays DPD Information for a Customer in HelpScout
- * Version: 1.0.0b1
+ * Version: 1.0.0
  * Text Domain: pyis-dpd-helpscout
  * Author: Eric Defore
  * Author URI: http://realbigmarketing.com
@@ -18,37 +18,37 @@ if ( ! class_exists( 'PyIS_DPD_HelpScout' ) ) {
     /**
      * Main PyIS_DPD_HelpScout class
      *
-     * @since       0.1.0
+     * @since       1.0.0
      */
     class PyIS_DPD_HelpScout {
         
         /**
          * @var         PyIS_DPD_HelpScout $plugin_data Holds Plugin Header Info
-         * @since       0.1.0
+         * @since       1.0.0
          */
         public $plugin_data;
         
         /**
          * @var         PyIS_DPD_HelpScout $settings Admin Settings
-         * @since       0.1.0
+         * @since       1.0.0
          */
         public $settings;
         
         /**
          * @var         PyIS_DPD_HelpScout $rest REST Endpoints
-         * @since       0.1.0
+         * @since       1.0.0
          */
         public $rest;
         
         /**
          * @var         PyIS_DPD_HelpScout $dpd_api DPD API Class
-         * @since       0.1.0
+         * @since       1.0.0
          */
         public $dpd_api;
 		
 		/**
          * @var         PyIS_DPD_HelpScout $field_helpers RBM Field Helpers
-         * @since       1.1.0
+         * @since       1.0.0
          */
 		public $field_helpers;
 
@@ -56,7 +56,7 @@ if ( ! class_exists( 'PyIS_DPD_HelpScout' ) ) {
          * Get active instance
          *
          * @access      public
-         * @since       0.1.0
+         * @since       1.0.0
          * @return      object self::$instance The one true PyIS_DPD_HelpScout
          */
         public static function instance() {
@@ -187,7 +187,7 @@ if ( ! class_exists( 'PyIS_DPD_HelpScout' ) ) {
          * Setup plugin constants
          *
          * @access      private
-         * @since       0.1.0
+         * @since       1.0.0
          * @return      void
          */
         private function setup_constants() {
@@ -226,7 +226,7 @@ if ( ! class_exists( 'PyIS_DPD_HelpScout' ) ) {
          * Internationalization
          *
          * @access      private 
-         * @since       0.1.0
+         * @since       1.0.0
          * @return      void
          */
         private function load_textdomain() {
@@ -236,7 +236,7 @@ if ( ! class_exists( 'PyIS_DPD_HelpScout' ) ) {
             /**
              * Allows the ability to override the translation directory within the plugin to check.
              *
-             * @since 0.1.0
+             * @since 1.0.0
              */
             $lang_dir = apply_filters( 'pyis_dpd_helpscout_languages_directory', $lang_dir );
 
@@ -268,7 +268,7 @@ if ( ! class_exists( 'PyIS_DPD_HelpScout' ) ) {
          * Include different aspects of the Plugin
          * 
          * @access      private
-         * @since       0.1.0
+         * @since       1.0.0
          * @return      void
          */
         private function require_necessities() {
@@ -298,7 +298,7 @@ if ( ! class_exists( 'PyIS_DPD_HelpScout' ) ) {
          * Register our CSS/JS to use later
          * 
          * @access      public
-         * @since       0.1.0
+         * @since       1.0.0
          * @return      void
          */
         public function register_scripts() {
@@ -324,7 +324,7 @@ if ( ! class_exists( 'PyIS_DPD_HelpScout' ) ) {
         * Show admin notices.
         * 
         * @access    public
-        * @since     0.1.0
+        * @since     1.0.0
         * @return    HTML
         */
         public function admin_notices() {
@@ -347,7 +347,7 @@ if ( ! class_exists( 'PyIS_DPD_HelpScout' ) ) {
  * The main function responsible for returning the one true PyIS_DPD_HelpScout
  * instance to functions everywhere
  *
- * @since       0.1.0
+ * @since       1.0.0
  * @return      \PyIS_DPD_HelpScout The one true PyIS_DPD_HelpScout
  */
 add_action( 'plugins_loaded', 'PyIS_DPD_HelpScout_load' );
