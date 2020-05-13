@@ -3,7 +3,7 @@
  * Plugin Name: PyImageSearch DPD+HelpScout
  * Plugin URL: https://github.com/Py-Image/dpd-helpscout-wordpress
  * Description: Displays DPD Information for a Customer in HelpScout
- * Version: 1.0.0
+ * Version: 1.0.1b1
  * Text Domain: pyis-dpd-helpscout
  * Author: Eric Defore
  * Author URI: http://realbigmarketing.com
